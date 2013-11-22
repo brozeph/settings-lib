@@ -15,7 +15,6 @@
   "repository": "git://github.com/PlayNetwork/settings-lib.git",
   "homepage": "http://github.com/PlayNetwork/settings-lib",
   "dependencies": {
-    "argparse": "~0.1.15",
     "async": "~0.2.9"
   },
   "devDependencies": {
