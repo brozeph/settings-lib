@@ -1,0 +1,35 @@
+{
+  "name" : "settings-lib",
+  "description" : "Simple library allowing override capability for application settings",
+  "main" : "index.js",
+  "version" : "0.0.1",
+  "author" : "Joshua Thomas (http://github.com/brozeph)",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "keywords": [
+    "settings",
+    "config",
+    "override"
+  ],
+  "repository": "git://github.com/PlayNetwork/settings-lib.git",
+  "homepage": "http://github.com/PlayNetwork/settings-lib",
+  "dependencies": {
+    "argparse": "~0.1.15",
+    "async": "~0.2.9"
+  },
+  "devDependencies": {
+    "chai": "~1.7.2",
+    "coveralls": "~2.0.16",
+    "jscoverage": "~0.3.8",
+    "jshint": "~2.1.10",
+    "mocha": "~1.12.1",
+    "mocha-lcov-reporter": "0.0.1"
+  },
+  "scripts": {
+    "coverage": "rm -rf ./reports ; mkdir -p ./reports ; NODE_SETTINGSLIB_COVERAGE=true mocha -R html-cov -r ./test/common.js -u bdd ./test/lib > reports/coverage.html",
+    "pretest": "jshint *.js ./lib/*.js ./test/*.js ; jscoverage ./lib ./lib-cov",
+    "test": "mocha --check-leaks -R spec -r ./test/common.js -u bdd ./test/lib",
+    "posttest": "NODE_SETTINGSLIB_COVERAGE=true mocha -R mocha-lcov-reporter -r ./test/common.js -u bdd ./test/lib | ./node_modules/coveralls/bin/coveralls.js"
+  }
+}
