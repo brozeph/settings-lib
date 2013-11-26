@@ -1,4 +1,6 @@
 {
 	"test-key" : "test-value-override",
-	"extra-key" : "test-value"
+	"extra-key" : {
+		"sub-extra-key" : "sub-extra-key-value"
+	}
 }

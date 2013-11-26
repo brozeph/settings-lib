@@ -1,3 +1,6 @@
 {
-	"test-key" : "test-value"
+	"test-key" : "test-value",
+	"sub" : {
+		"sub-test-key" : "sub-test-value"
+	}
 }
