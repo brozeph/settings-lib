@@ -1,6 +1,8 @@
 # Settings Library
 
-A simple library intended to make combining the information from multiple config sources together simple and easy for applications. While developing code, this module allows for the creation of a base configuration file that specifies all the core data necessary to operate in a local environment. Subsequent configuration file overrides can be applied either via a NODE_ENV setting or via command line switch (or both).
+This library intends to allow configuration settings from multiple config sources to be combined, in layers, starting with a base configuration, adding environment settings to that and finally applying command line settings.
+
+This module allows an application to specify a base configuration file that contains settings necessary for development. Subsequent configuration file overrides can be applied to override configuration settings in the base config, either via NODE_ENV, other environment variables, via command line switches or all of the above.
 
 ## Usage
 
@@ -21,10 +23,10 @@ The `options` parameter is optional. When it is not supplied or when only a port
 ```Javascript
 defaultOptions = {
   baseConfigPath : '',
-  environmentSearchPaths : ['./', './config', './settings'],
   commandLineSwitches : ['--config-file'],
-  readEnvironmentMap : {},
-  readCommandLineMap : {}
+  environmentSearchPaths : ['./', './config', './settings'],
+  readCommandLineMap : {},
+  readEnvironmentMap : {}
 };
 ```
 
