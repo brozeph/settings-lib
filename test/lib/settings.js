@@ -327,6 +327,81 @@ describe('settings', function () {
 	});
 
 	describe('options.readCommandLineMap', function () {
+		it('should allow mapping to be specified at initialization', function (done) {
+			defaultOptions.readCommandLineMap = {
+				test : 'test'
+			};
 
+			settingsLib.initialize(
+				defaultOptions,
+				function (err, settings) {
+					should.not.exist(err);
+					should.exist(settings);
+					should.exist(settingsLib.options.readCommandLineMap);
+					should.exist(settingsLib.options.readCommandLineMap.test);
+					settingsLib.options.readCommandLineMap.test
+						.should.equal(defaultOptions.readCommandLineMap.test);
+
+					done();
+				});
+		});
+
+		it('when specified, should read command line switches matching config', function (done) {
+			defaultOptions.readCommandLineMap = {
+				'--sub-test-key' : 'sub.sub-test-key',
+				'--sub-sub-test-key' : 'sub["sub-test"]["sub-test-key"]'
+			};
+
+			process.argv.push('--sub-test-key');
+			process.argv.push('overridden by command line switch');
+			process.argv.push('--sub-sub-test-key');
+			process.argv.push('overridden again by environment variable');
+			process.env.APP_SUB_SUB_TEST_KEY = 'overridden again by command line switch';
+
+			settingsLib.initialize(
+				defaultOptions,
+				function (err, settings) {
+					should.not.exist(err);
+					should.exist(settings);
+					settings['test-key'].should.equal('test-value');
+					should.exist(settings.sub);
+					should.exist(settings.sub['sub-test-key']);
+					settings.sub['sub-test-key'].should.equal('overridden by command line switch');
+					should.exist(settings.sub['sub-test']['sub-test-key']);
+
+					// clean up
+					process.argv = process.argv.slice(0, process.argv.length - 4);
+
+					done();
+				});
+		});
+
+		it('should apply command line switches over command line config', function (done) {
+			defaultOptions.readCommandLineMap = {
+				'--sub-extra-key' : 'extra-key.sub-extra-key',
+			};
+
+			process.argv.push('--config-file');
+			process.argv.push('./test/test.json');
+			process.argv.push('--sub-extra-key');
+			process.argv.push('overridden by command line switch');
+
+			settingsLib.initialize(
+				defaultOptions,
+				function (err, settings) {
+					should.not.exist(err);
+					should.exist(settings);
+					settings['test-key'].should.equal('test-value-override');
+					should.exist(settings['extra-key']);
+					should.exist(settings['extra-key']['sub-extra-key']);
+					settings['extra-key']['sub-extra-key']
+						.should.equal('overridden by command line switch');
+
+					// clean up
+					process.argv = process.argv.slice(0, process.argv.length - 4);
+
+					done();
+				});
+		});
 	});
 });
