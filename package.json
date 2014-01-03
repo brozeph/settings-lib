@@ -12,8 +12,8 @@
     "config",
     "override"
   ],
-  "repository": "git://github.com/PlayNetwork/settings-lib.git",
-  "homepage": "http://github.com/PlayNetwork/settings-lib",
+  "repository": "git://github.com/brozeph/settings-lib.git",
+  "homepage": "http://github.com/brozeph/settings-lib",
   "dependencies": {
     "async": "~0.2.9"
   },
