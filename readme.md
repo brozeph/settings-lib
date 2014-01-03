@@ -4,6 +4,12 @@ This library intends to allow configuration settings from multiple config source
 
 This module allows an application to specify a base configuration file that contains settings necessary for development. Subsequent configuration file overrides can be applied to override configuration settings in the base config, either via NODE_ENV, other environment variables, via command line switches or all of the above.
 
+## Installation
+
+```Javascript
+npm install settings-lib
+```
+
 ## Usage
 
 ```Javascript
