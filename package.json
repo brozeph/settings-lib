@@ -15,15 +15,15 @@
   "repository": "git://github.com/brozeph/settings-lib.git",
   "homepage": "http://github.com/brozeph/settings-lib",
   "dependencies": {
-    "async": "~0.2.9"
+    "async": "~0.2.10"
   },
   "devDependencies": {
-    "chai": "~1.7.2",
-    "coveralls": "~2.0.16",
-    "jscoverage": "~0.3.8",
-    "jshint": "~2.1.10",
-    "mocha": "~1.12.1",
-    "mocha-lcov-reporter": "0.0.1"
+    "chai": "*",
+    "coveralls": "*",
+    "jscoverage": "*",
+    "jshint": "*",
+    "mocha": "*",
+    "mocha-lcov-reporter": "*"
   },
   "scripts": {
     "coverage": "rm -rf ./reports ; mkdir -p ./reports ; NODE_SETTINGSLIB_COVERAGE=true mocha -R html-cov -r ./test/common.js -u bdd ./test/lib > reports/coverage.html",
