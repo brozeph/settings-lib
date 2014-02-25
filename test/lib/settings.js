@@ -324,6 +324,28 @@ describe('settings', function () {
 					done();
 				});
 		});
+
+		it('should create config for environment mappings when base config key does not exist', function (done) {
+			defaultOptions.readEnvironmentMap = {
+				'APP_NO_KEY' : 'no-key.sub-no-key',
+			};
+
+			process.env.APP_NO_KEY = 'created from environment variable';
+
+			settingsLib.initialize(
+				defaultOptions,
+				function (err, settings) {
+					should.not.exist(err);
+					should.exist(settings['no-key']);
+					should.exist(settings['no-key']['sub-no-key']);
+					settings['no-key']['sub-no-key']
+						.should.equal('created from environment variable');
+
+					delete process.env.APP_NO_KEY;
+
+					done();
+				});
+		});
 	});
 
 	describe('options.readCommandLineMap', function () {
@@ -399,6 +421,29 @@ describe('settings', function () {
 
 					// clean up
 					process.argv = process.argv.slice(0, process.argv.length - 4);
+
+					done();
+				});
+		});
+
+		it('should create config for command line switches when base config key does not exist', function (done) {
+			defaultOptions.readCommandLineMap = {
+				'--no-key' : 'no-key.sub-no-key',
+			};
+
+			process.argv.push('--no-key');
+			process.argv.push('created from command line switch');
+
+			settingsLib.initialize(
+				defaultOptions,
+				function (err, settings) {
+					should.not.exist(err);
+					should.exist(settings['no-key']);
+					should.exist(settings['no-key']['sub-no-key']);
+					settings['no-key']['sub-no-key']
+						.should.equal('created from command line switch');
+
+					process.argv = process.argv.slice(0, process.argv.length - 2);
 
 					done();
 				});
