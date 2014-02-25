@@ -4,6 +4,7 @@ This library intends to allow configuration settings from multiple config source
 
 This module allows an application to specify a base configuration file that contains settings necessary for development. Subsequent configuration file overrides can be applied to override configuration settings in the base config, either via NODE_ENV, other environment variables, via command line switches or all of the above.
 
+[![Build Status](https://secure.travis-ci.org/brozeph/settings-lib.png)](http://travis-ci.org/brozeph/settings-lib)
 [![Dependency Status](https://gemnasium.com/brozeph/settings-lib.png)](https://gemnasium.com/brozeph/settings-lib)
 [![Coverage Status](https://coveralls.io/repos/brozeph/settings-lib/badge.png)](https://coveralls.io/r/brozeph/settings-lib)
 
