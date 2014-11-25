@@ -2,7 +2,7 @@
   "name": "settings-lib",
   "description": "Simple library allowing override capability for application settings",
   "main": "./lib/settings.js",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "Joshua Thomas (http://github.com/brozeph)",
   "engines": {
     "node": ">= 0.8.0"
@@ -27,7 +27,7 @@
   },
   "scripts": {
     "coverage": "rm -rf ./reports ; mkdir -p ./reports ; NODE_SETTINGSLIB_COVERAGE=true mocha -R html-cov -r ./test/common.js -u bdd ./test/lib > reports/coverage.html",
-    "pretest": "jshint ./lib/*.js ./test/*.js ; jscoverage ./lib ./lib-cov",
+    "pretest": "jshint ./lib/*.js ./test/*.js ; jscoverage ./lib/settings.js ./lib-cov/settings.js",
     "test": "mocha --check-leaks -R spec -r ./test/common.js -u bdd ./test/lib",
     "posttest": "NODE_SETTINGSLIB_COVERAGE=true mocha -R mocha-lcov-reporter -r ./test/common.js -u bdd ./test/lib | ./node_modules/coveralls/bin/coveralls.js"
   }
