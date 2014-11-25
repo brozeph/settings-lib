@@ -1,3 +1,7 @@
+# 0.0.5 / 2014-11-24
+
+* Adjusting for changes in how jscoverage works
+
 # 0.0.4 / 2014-11-24
 
 * Updating dependencies
