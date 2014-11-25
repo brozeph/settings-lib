@@ -76,7 +76,7 @@ In the event that you wish to override specific configuration keys directly via 
 
 ```Javascript
 var
-  settings = require('settings'),
+  settings = require('settings-lib'),
   options = {
     readEnvironmentMap : {
       APP_HOSTNAME : 'server.hostname'
@@ -101,7 +101,7 @@ Similar to environment variable configuration key mapping, command line configur
 
 ```Javascript
 var
-  settings = require('settings'),
+  settings = require('settings-lib'),
   options = {
     readCommandLineMap : {
       '--hostname' : 'server.hostname'
