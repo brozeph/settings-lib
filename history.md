@@ -1,3 +1,7 @@
+# 0.0.4 / 2014-11-24
+
+* Updating dependencies
+
 # 0.0.3 / 2014-11-24
 
 * Fixing incorrect information in the readme.md
