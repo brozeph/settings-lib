@@ -20,7 +20,7 @@ npm install settings-lib
 
 ```Javascript
 var
-  settings = require('settings'),
+  settings = require('settings-lib'),
   options = { baseConfigPath : './config/config.json' };
 
 settings.initialize(options, function (err, config) {
