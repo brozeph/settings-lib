@@ -1,3 +1,7 @@
+# v0.1.0 / 2015-03-18
+
+* Building support for Node v0.12
+
 # 0.0.5 / 2014-11-24
 
 * Adjusting for changes in how jscoverage works
