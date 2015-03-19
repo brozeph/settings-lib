@@ -1,3 +1,7 @@
+# v0.1.1 / 2015-03-19
+
+* Increasing verbosity of error when unable to parse JSON config
+
 # v0.1.0 / 2015-03-18
 
 * Building support for Node v0.12
