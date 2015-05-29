@@ -1,3 +1,7 @@
+# v0.1.2 / 2015-05-28
+
+* Adjusting command line and environment maps to attempt to coerce config override values based on the type found in the default settings
+
 # v0.1.1 / 2015-03-19
 
 * Increasing verbosity of error when unable to parse JSON config
