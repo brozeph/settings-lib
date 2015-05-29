@@ -1,6 +1,11 @@
 {
 	"test-key" : "test-value",
 	"sub" : {
-		"sub-test-key" : "sub-test-value"
+		"sub-test-key" : "sub-test-value",
+		"sub-sub" : {
+			"sub-sub-test-array" : ["test"],
+			"sub-sub-test-bool" : true,
+			"sub-sub-test-number" : 101
+		}
 	}
 }

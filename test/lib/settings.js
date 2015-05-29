@@ -298,6 +298,43 @@ describe('settings', function () {
 				});
 		});
 
+		it('should coerce to type found in base config', function (done) {
+			defaultOptions.readEnvironmentMap = {
+				'COERCE_ARRAY' : 'sub.sub-sub.sub-sub-test-array',
+				'COERCE_BOOL' : 'sub.sub-sub.sub-sub-test-bool',
+				'COERCE_NUMBER' : 'sub["sub-sub"]["sub-sub-test-number"]'
+			};
+
+			process.env.COERCE_ARRAY = '[1,2,3]';
+			process.env.COERCE_BOOL = 'false';
+			process.env.COERCE_NUMBER = '1337';
+
+			settingsLib.initialize(
+				defaultOptions,
+				function (err, settings) {
+					should.not.exist(err);
+					should.exist(settings);
+
+					should.exist(settings.sub);
+					should.exist(settings.sub['sub-sub']);
+					should.exist(settings.sub['sub-sub']['sub-sub-test-array']);
+					settings.sub['sub-sub']['sub-sub-test-array'].should.be.a('array');
+
+					should.exist(settings.sub['sub-sub']['sub-sub-test-bool']);
+					settings.sub['sub-sub']['sub-sub-test-bool'].should.be.a('boolean');
+
+					should.exist(settings.sub['sub-sub']['sub-sub-test-number']);
+					settings.sub['sub-sub']['sub-sub-test-number'].should.be.a('number');
+
+					delete process.env.COERCE_ARRAY;
+					delete process.env.COERCE_BOOL;
+					delete process.env.COERCE_NUMBER;
+
+					done();
+				});
+
+		});
+
 		it('should apply environment variables over environment config', function (done) {
 			defaultOptions.readEnvironmentMap = {
 				'APP_SUB_EXTRA_KEY' : 'extra-key.sub-extra-key',
