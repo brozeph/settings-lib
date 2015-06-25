@@ -1,3 +1,7 @@
+# v0.1.3 / 2015-06-25
+
+* Updating async module dependency
+
 # v0.1.2 / 2015-05-28
 
 * Adjusting command line and environment maps to attempt to coerce config override values based on the type found in the default settings
