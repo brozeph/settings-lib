@@ -1,3 +1,7 @@
+# v0.1.5 / 2015-11-11
+
+* Refined coercion of boolean types to work properly
+
 # v0.1.4 / 2015-11-11
 
 * Fixed issue where type coercion would not work properly on deeply nested configuration
