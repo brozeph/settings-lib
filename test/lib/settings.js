@@ -332,7 +332,6 @@ describe('settings', function () {
 
 					done();
 				});
-
 		});
 
 		it('should apply environment variables over environment config', function (done) {
