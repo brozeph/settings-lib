@@ -1,3 +1,7 @@
+# v0.1.6 / 2015-11-16
+
+* Fixed issue where `null` values in config caused type coercion to fail
+
 # v0.1.5 / 2015-11-11
 
 * Refined coercion of boolean types to work properly

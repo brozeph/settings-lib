@@ -6,6 +6,7 @@
 			"sub-sub-test-array" : ["test"],
 			"sub-sub-test-bool" : true,
 			"sub-sub-test-number" : 101
-		}
+		},
+		"test-null-key": null
 	}
 }
