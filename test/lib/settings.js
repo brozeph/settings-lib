@@ -1,8 +1,13 @@
-describe('settings', function () {
+var
+	chai = require('chai'),
 
-	var
-		defaultOptions,
-		settingsLib = requireWithCoverage('settings');
+	settingsLib = require('../../lib/settings.js'),
+
+	defaultOptions,
+	should = chai.should();
+
+
+describe('settings', function () {
 
 	beforeEach(function () {
 		defaultOptions = {
