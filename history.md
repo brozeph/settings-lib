@@ -1,3 +1,7 @@
+# v0.2.0 / 2016-04-15
+
+* Introduced native `Promise` support
+
 # v0.1.6 / 2015-11-16
 
 * Fixed issue where `null` values in config caused type coercion to fail
