@@ -1,6 +1,8 @@
 # v0.2.0 / 2016-04-15
 
 * Introduced native `Promise` support
+* Moved to gulp for build tasks running
+* Moved to eslint for code lint
 
 # v0.1.6 / 2015-11-16
 
