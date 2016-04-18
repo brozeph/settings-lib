@@ -151,6 +151,25 @@ describe('settings', function () {
 					return done();
 				});
 		});
+
+		it('should load first file found if multiple matching environment files are found', function (done) {
+			process.env.NODE_ENV = 'test';
+			defaultOptions.environmentSearchPaths = ['./test', './test/multiple-env-path-test'];
+
+			settingsLib.initialize(
+				defaultOptions,
+				function (err, settings) {
+					should.not.exist(err);
+					should.exist(settings);
+					should.exist(settingsLib.environmentConfig);
+					settings['test-key'].should.equal('test-value-override');
+
+					// clean up
+					delete process.env.NODE_ENV;
+
+					return done();
+				});
+		});
 	});
 
 	describe('options.commandLineSwitches', function () {

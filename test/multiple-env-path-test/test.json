@@ -1,0 +1,6 @@
+{
+	"test-key" : "test-value-override-multiple-path-test",
+	"extra-key" : {
+		"sub-extra-key" : "sub-extra-key-value-multiple-path"
+	}
+}
