@@ -3,7 +3,7 @@
 * Introduced native `Promise` support
 * Moved to gulp for build tasks running
 * Moved to eslint for code lint
-* Implemented a safety check for scenarios where multiple override files are found based on environment
+* The first found match is applied when multiple environment override files are present
 
 # v0.1.6 / 2015-11-16
 

@@ -152,17 +152,17 @@ describe('settings', function () {
 				});
 		});
 
-		it('should choke if multiple environment override files are found based on environment', function (done) {
+		it('should use last match if multiple environment override files are found based on environment', function (done) {
 			process.env.NODE_ENV = 'test';
 			defaultOptions.environmentSearchPaths = ['./test', './test/multiple-env-path-test'];
 
 			settingsLib.initialize(
 				defaultOptions,
 				function (err, settings) {
-					should.exist(err);
-					should.exist(err.path);
-					err.path.should.equal('./test/multiple-env-path-test/test.json');
-					should.not.exist(settings);
+					should.not.exist(err);
+					should.exist(settings);
+					should.exist(settings['test-key']);
+					settings['test-key'].should.equal('test-value-override');
 
 					// clean up
 					delete process.env.NODE_ENV;
