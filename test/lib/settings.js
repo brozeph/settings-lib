@@ -1,8 +1,15 @@
-describe('settings', function () {
+var
+	chai = require('chai'),
 
-	var
-		defaultOptions,
-		settingsLib = requireWithCoverage('settings');
+	settingsLib = require('../../lib/settings.js'),
+
+	defaultOptions,
+	should = chai.should();
+
+const DEFAULT_ARGV_START_POSITION = 2;
+
+
+describe('settings', function () {
 
 	beforeEach(function () {
 		defaultOptions = {
@@ -16,7 +23,7 @@ describe('settings', function () {
 				should.not.exist(err);
 				should.exist(settings);
 
-				done();
+				return done();
 			});
 		});
 
@@ -25,7 +32,7 @@ describe('settings', function () {
 				should.not.exist(err);
 				should.exist(settings);
 
-				done();
+				return done();
 			});
 		});
 	});
@@ -37,7 +44,7 @@ describe('settings', function () {
 				should.exist(settings);
 				should.exist(settings['test-key']);
 
-				done();
+				return done();
 			});
 		});
 
@@ -47,8 +54,19 @@ describe('settings', function () {
 				should.exist(err);
 				should.not.exist(settings);
 
-				done();
+				return done();
 			});
+		});
+
+		it('should load base config (Promise)', function (done) {
+			settingsLib.initialize(defaultOptions)
+				.then((settings) => {
+					should.exist(settings);
+					should.exist(settings['test-key']);
+
+					return done();
+				})
+				.catch(done);
 		});
 	});
 
@@ -65,7 +83,7 @@ describe('settings', function () {
 
 					delete process.env.NODE_ENV;
 
-					done();
+					return done();
 				});
 		});
 
@@ -82,7 +100,7 @@ describe('settings', function () {
 
 					delete process.env.NODE_ENV;
 
-					done();
+					return done();
 				});
 		});
 
@@ -99,7 +117,7 @@ describe('settings', function () {
 					// clean up
 					delete process.env.NODE_ENV;
 
-					done();
+					return done();
 				});
 		});
 
@@ -113,11 +131,11 @@ describe('settings', function () {
 					should.not.exist(err);
 					should.exist(settings);
 					should.exist(settingsLib.environmentConfig);
-					settings["test-key"].should.equal('test-value-override');
+					settings['test-key'].should.equal('test-value-override');
 
 					delete process.env.NODE_ENV;
 
-					done();
+					return done();
 				});
 		});
 
@@ -128,9 +146,28 @@ describe('settings', function () {
 					should.not.exist(err);
 					should.exist(settings);
 					should.not.exist(settingsLib.environmentConfig);
-					settings["test-key"].should.equal('test-value');
+					settings['test-key'].should.equal('test-value');
 
-					done();
+					return done();
+				});
+		});
+
+		it('should use last match if multiple environment override files are found based on environment', function (done) {
+			process.env.NODE_ENV = 'test';
+			defaultOptions.environmentSearchPaths = ['./test', './test/multiple-env-path-test'];
+
+			settingsLib.initialize(
+				defaultOptions,
+				function (err, settings) {
+					should.not.exist(err);
+					should.exist(settings);
+					should.exist(settings['test-key']);
+					settings['test-key'].should.equal('test-value-override');
+
+					// clean up
+					delete process.env.NODE_ENV;
+
+					return done();
 				});
 		});
 	});
@@ -148,9 +185,9 @@ describe('settings', function () {
 					should.exist(settingsLib.commandLineConfig);
 
 					// clean up
-					process.argv = process.argv.slice(0, process.argv.length - 2);
+					process.argv = process.argv.slice(0, process.argv.length - DEFAULT_ARGV_START_POSITION);
 
-					done();
+					return done();
 				});
 		});
 
@@ -165,9 +202,9 @@ describe('settings', function () {
 					should.not.exist(settings);
 
 					// clean up
-					process.argv = process.argv.slice(0, process.argv.length - 2);
+					process.argv = process.argv.slice(0, process.argv.length - DEFAULT_ARGV_START_POSITION);
 
-					done();
+					return done();
 				});
 		});
 
@@ -181,12 +218,12 @@ describe('settings', function () {
 					should.not.exist(err);
 					should.exist(settings);
 					should.exist(settingsLib.commandLineConfig);
-					settings["test-key"].should.equal('test-value-override-again');
+					settings['test-key'].should.equal('test-value-override-again');
 
 					// clean up
-					process.argv = process.argv.slice(0, process.argv.length - 2);
+					process.argv = process.argv.slice(0, process.argv.length - DEFAULT_ARGV_START_POSITION);
 
-					done();
+					return done();
 				});
 		});
 
@@ -203,13 +240,13 @@ describe('settings', function () {
 					should.exist(settings);
 					should.exist(settingsLib.commandLineConfig);
 					should.exist(settingsLib.environmentConfig);
-					settings["test-key"].should.equal('test-value-override-again');
+					settings['test-key'].should.equal('test-value-override-again');
 
 					// clean up
-					process.argv = process.argv.slice(0, process.argv.length - 2);
+					process.argv = process.argv.slice(0, process.argv.length - DEFAULT_ARGV_START_POSITION);
 					delete process.env.NODE_ENV;
 
-					done();
+					return done();
 				});
 		});
 
@@ -224,9 +261,9 @@ describe('settings', function () {
 					should.not.exist(settings);
 
 					// clean up
-					process.argv = process.argv.slice(0, process.argv.length - 2);
+					process.argv = process.argv.slice(0, process.argv.length - DEFAULT_ARGV_START_POSITION);
 
-					done();
+					return done();
 				});
 		});
 
@@ -244,9 +281,9 @@ describe('settings', function () {
 					should.not.exist(settingsLib.commandLineConfig);
 
 					// clean up
-					process.argv = process.argv.slice(0, process.argv.length - 2);
+					process.argv = process.argv.slice(0, process.argv.length - DEFAULT_ARGV_START_POSITION);
 
-					done();
+					return done();
 				});
 		});
 	});
@@ -267,7 +304,7 @@ describe('settings', function () {
 					settingsLib.options.readEnvironmentMap.test.should.equal(
 						defaultOptions.readEnvironmentMap.test);
 
-					done();
+					return done();
 				});
 		});
 
@@ -294,7 +331,7 @@ describe('settings', function () {
 					delete process.env.APP_SUB_TEST_KEY;
 					delete process.env.APP_SUB_SUB_TEST_KEY;
 
-					done();
+					return done();
 				});
 		});
 
@@ -305,7 +342,7 @@ describe('settings', function () {
 				'COERCE_NUMBER' : 'sub["sub-sub"]["sub-sub-test-number"]'
 			};
 
-			process.env.COERCE_ARRAY = '[1,2,3]';
+			process.env.COERCE_ARRAY = '[1,,3]';
 			process.env.COERCE_BOOL = 'false';
 			process.env.COERCE_NUMBER = '1337';
 
@@ -330,13 +367,13 @@ describe('settings', function () {
 					delete process.env.COERCE_BOOL;
 					delete process.env.COERCE_NUMBER;
 
-					done();
+					return done();
 				});
 		});
 
 		it('should apply environment variables over environment config', function (done) {
 			defaultOptions.readEnvironmentMap = {
-				'APP_SUB_EXTRA_KEY' : 'extra-key.sub-extra-key',
+				'APP_SUB_EXTRA_KEY' : 'extra-key.sub-extra-key'
 			};
 			defaultOptions.environmentSearchPaths = ['./test'];
 
@@ -357,13 +394,13 @@ describe('settings', function () {
 					delete process.env.NODE_ENV;
 					delete process.env.APP_SUB_EXTRA_KEY;
 
-					done();
+					return done();
 				});
 		});
 
 		it('should create config for environment mappings when base config key does not exist', function (done) {
 			defaultOptions.readEnvironmentMap = {
-				'APP_NO_KEY' : 'no-key.sub-no-key',
+				'APP_NO_KEY' : 'no-key.sub-no-key'
 			};
 
 			process.env.APP_NO_KEY = 'created from environment variable';
@@ -379,7 +416,7 @@ describe('settings', function () {
 
 					delete process.env.APP_NO_KEY;
 
-					done();
+					return done();
 				});
 		});
 	});
@@ -400,11 +437,13 @@ describe('settings', function () {
 					settingsLib.options.readCommandLineMap.test
 						.should.equal(defaultOptions.readCommandLineMap.test);
 
-					done();
+					return done();
 				});
 		});
 
 		it('when specified, should read command line switches matching config', function (done) {
+			var paramCount = 4;
+
 			defaultOptions.readCommandLineMap = {
 				'--sub-test-key' : 'sub.sub-test-key',
 				'--sub-sub-test-key' : 'sub["sub-test"]["sub-test-key"]'
@@ -428,15 +467,17 @@ describe('settings', function () {
 					should.exist(settings.sub['sub-test']['sub-test-key']);
 
 					// clean up
-					process.argv = process.argv.slice(0, process.argv.length - 4);
+					process.argv = process.argv.slice(0, process.argv.length - paramCount);
 
-					done();
+					return done();
 				});
 		});
 
 		it('should apply command line switches over command line config', function (done) {
+			var paramCount = 4;
+
 			defaultOptions.readCommandLineMap = {
-				'--sub-extra-key' : 'extra-key.sub-extra-key',
+				'--sub-extra-key' : 'extra-key.sub-extra-key'
 			};
 
 			process.argv.push('--config-file');
@@ -456,15 +497,15 @@ describe('settings', function () {
 						.should.equal('overridden by command line switch');
 
 					// clean up
-					process.argv = process.argv.slice(0, process.argv.length - 4);
+					process.argv = process.argv.slice(0, process.argv.length - paramCount);
 
-					done();
+					return done();
 				});
 		});
 
 		it('should create config for command line switches when base config key does not exist', function (done) {
 			defaultOptions.readCommandLineMap = {
-				'--no-key' : 'no-key.sub-no-key',
+				'--no-key' : 'no-key.sub-no-key'
 			};
 
 			process.argv.push('--no-key');
@@ -479,9 +520,9 @@ describe('settings', function () {
 					settings['no-key']['sub-no-key']
 						.should.equal('created from command line switch');
 
-					process.argv = process.argv.slice(0, process.argv.length - 2);
+					process.argv = process.argv.slice(0, process.argv.length - DEFAULT_ARGV_START_POSITION);
 
-					done();
+					return done();
 				});
 		});
 	});
