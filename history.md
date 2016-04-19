@@ -1,4 +1,8 @@
-# v0.2.0 / 2016-04-15
+# v0.2.1 / 2016-04-19
+
+* Fixed issue where environment config override file search was not properly working
+
+# v0.2.0 / 2016-04-18
 
 * Introduced native `Promise` support
 * Moved to gulp for build tasks running
