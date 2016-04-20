@@ -1,3 +1,7 @@
+# v0.3.0 / 2016-04-20
+
+* Added alias of `baseSettingsPath` (in addition to `baseConfigPath`)
+
 # v0.2.1 / 2016-04-19
 
 * Fixed issue where environment config override file search was not properly working
