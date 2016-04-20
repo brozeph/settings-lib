@@ -21,11 +21,28 @@ npm install settings-lib
 ```Javascript
 var
   settings = require('settings-lib'),
-  options = { baseConfigPath : './config/config.json' };
+  options = { baseSettingsPath : './config/config.json' };
 
 settings.initialize(options, function (err, config) {
   // work with config
 });
+```
+
+The settings-lib also supports promises natively (as of v0.2.0):
+
+```Javascript
+let
+  settings = require('settings-lib'),
+  options = { baseSettingsPath : './settings/settings.json' };
+
+settings
+  .initialize(options)
+  .then((config) => {
+    // work with config
+  })
+  .catch((err) => {
+    // handle any loading / parsing errors
+  });
 ```
 
 ## Options
@@ -34,7 +51,7 @@ The `options` parameter is optional. When it is not supplied or when only a port
 
 ```Javascript
 defaultOptions = {
-  baseConfigPath : '',
+  baseSettingsPath : '',
   commandLineSwitches : ['--config-file'],
   environmentSearchPaths : ['./', './config', './settings'],
   readCommandLineMap : {},
@@ -44,7 +61,7 @@ defaultOptions = {
 
 ### Base Config Path
 
-The base configuration path is specified as a single string value in the options object passed to settings via `initialize(options, callback)`. If no baseConfigPath field exists or the value is blank, the settings library will attempt to construct configuration via environment based configuration and command line based configuration.
+The base configuration path is specified as a single string value in the options object passed to settings via `initialize(options, callback)`. If no baseSettingsPath field exists or the value is blank, the settings library will attempt to construct configuration via environment based configuration and command line based configuration.
 
 ### Environment Search Paths
 

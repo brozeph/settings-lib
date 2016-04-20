@@ -2,7 +2,7 @@
   "name": "settings-lib",
   "description": "Simple library allowing override capability for application settings",
   "main": "./lib/settings.js",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "author": "Joshua Thomas (http://github.com/brozeph)",
   "license": "MIT",
   "engines": {
