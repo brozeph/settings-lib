@@ -7,7 +7,6 @@ A base configuration file can be specified that contains settings necessary for 
 This module is useful in that it allows you to abstract configuration management from your application and deployment at runtime, thus enabling you to avoid checking in sensitive configuration values (i.e. usernames, passwords, secret keys, etc.) to source control.
 
 [![Build Status](https://secure.travis-ci.org/brozeph/settings-lib.png)](http://travis-ci.org/brozeph/settings-lib)
-[![Dependency Status](https://gemnasium.com/brozeph/settings-lib.png)](https://gemnasium.com/brozeph/settings-lib)
 [![Coverage Status](https://coveralls.io/repos/brozeph/settings-lib/badge.png)](https://coveralls.io/r/brozeph/settings-lib)
 
 ## Installation

@@ -43,7 +43,7 @@
     "prepublish": "check-node-version --npm \">=4\" || npm run prepare",
     "pretest": "gulp clean && gulp lint",
     "test": "nyc mocha ./test/src",
-    "posttest": ""
+    "posttest": "gulp reportCoverage"
   },
   "nyc": {
     "all": true,
