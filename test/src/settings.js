@@ -1,15 +1,14 @@
-var
-	chai = require('chai'),
+import chai from 'chai';
+import settingsLib from '../../src/settings.js';
 
-	settingsLib = require('../../lib/settings.js'),
-
-	defaultOptions,
+const
+	DEFAULT_ARGV_START_POSITION = 2,
 	should = chai.should();
-
-const DEFAULT_ARGV_START_POSITION = 2;
 
 
 describe('settings', function () {
+
+	let defaultOptions;
 
 	beforeEach(function () {
 		defaultOptions = {
@@ -59,7 +58,8 @@ describe('settings', function () {
 		});
 
 		it('should load base config (Promise)', function (done) {
-			settingsLib.initialize(defaultOptions)
+			settingsLib
+				.initialize(defaultOptions)
 				.then((settings) => {
 					should.exist(settings);
 					should.exist(settings['test-key']);
@@ -310,8 +310,8 @@ describe('settings', function () {
 
 		it('when specified, should read environment variables matching config', function (done) {
 			defaultOptions.readEnvironmentMap = {
-				'APP_SUB_TEST_KEY' : 'sub.sub-test-key',
-				'APP_SUB_SUB_TEST_KEY' : 'sub["sub-test"]["sub-test-key"]'
+				'APP_SUB_SUB_TEST_KEY' : 'sub["sub-test"]["sub-test-key"]',
+				'APP_SUB_TEST_KEY' : 'sub.sub-test-key'
 			};
 
 			process.env.APP_SUB_TEST_KEY = 'overridden by environment variable';
@@ -445,8 +445,8 @@ describe('settings', function () {
 			var paramCount = 4;
 
 			defaultOptions.readCommandLineMap = {
-				'--sub-test-key' : 'sub.sub-test-key',
-				'--sub-sub-test-key' : 'sub["sub-test"]["sub-test-key"]'
+				'--sub-sub-test-key' : 'sub["sub-test"]["sub-test-key"]',
+				'--sub-test-key' : 'sub.sub-test-key'
 			};
 
 			process.argv.push('--sub-test-key');
