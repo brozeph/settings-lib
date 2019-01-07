@@ -1,5 +1,6 @@
 .DS_Store
 .nyc_output
+dist
 npm-debug.log
 lib-cov
 node_modules
