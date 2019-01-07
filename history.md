@@ -1,3 +1,7 @@
+# v1.0.1 / 2019-01-07
+
+* Fixed reference to main in `package.json`
+
 # v1.0.0 / 2019-01-04
 
 * Modernized code, removed `co` dependency and moved to `babel` for transpilation
