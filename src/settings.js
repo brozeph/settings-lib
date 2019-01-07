@@ -1,25 +1,19 @@
-var
-	fs = require('fs'),
-	path = require('path'),
-
-	co = require('co');
+import fs from 'fs';
+import path from 'path';
 
 const DEFAULT_ARGV_START_POSITION = 2;
-
 
 /**
  * Primary module
  **/
 module.exports = (function (settings) {
-	'use strict';
-
 	let
 		defaultOptions = {
 			baseSettingsPath : '',
-			environmentSearchPaths : ['./', './config', './settings'],
 			commandLineSwitches : ['--config-file'],
-			readEnvironmentMap : {},
-			readCommandLineMap : {}
+			environmentSearchPaths : ['./', './config', './settings'],
+			readCommandLineMap : {},
+			readEnvironmentMap : {}
 		},
 		defaultTypesMap = {};
 
@@ -145,15 +139,15 @@ module.exports = (function (settings) {
 	 **/
 	function createObjectWithValue (expression, value) {
 		let
+			atEnd = function (list, key) {
+				return list.indexOf(key) === list.length - 1;
+			},
 			current,
 			keys = [],
 			// matches ], '], "], ][, '][', "][", [, [' and ["
 			regexHash = /([\'\"]?\]\[[\'\"]?)|(\[[\'\"]?)|([\'\"]?\])/g,
 			stack = {},
-			transform,
-			atEnd = function (keys, key) {
-				return keys.indexOf(key) === keys.length - 1;
-			};
+			transform;
 
 		if (expression) {
 			// breaks the expression into an array which represents its stack
@@ -362,8 +356,8 @@ module.exports = (function (settings) {
 							return checkIfFileExists(environmentOverridePath)
 								.then((exists) => {
 									return resolve({
-										path : environmentOverridePath,
-										exists : exists
+										exists,
+										path : environmentOverridePath
 									});
 								})
 								.catch(reject);
@@ -430,7 +424,7 @@ module.exports = (function (settings) {
 	 * @param {function} callback - an optional callback function
 	 * @returns {undefined|Promise} - if callback is not supplied, a native Promise is returned
 	 **/
-	settings.initialize = function (options, callback) {
+	settings.initialize = async (options, callback) => {
 		if (typeof options === 'function') {
 			callback = options;
 			options = {};
@@ -445,7 +439,7 @@ module.exports = (function (settings) {
 			delete options.baseConfigPath;
 		}
 
-		let exec = co(function *() {
+		let exec = async () => {
 			// clean up and prepare internal references
 			delete settings.baseConfig;
 			delete settings.environmentConfig;
@@ -455,11 +449,11 @@ module.exports = (function (settings) {
 			settings.options = cloneAndMerge([defaultOptions, options]);
 
 			// start loading up and applying all layers of configuration
-			yield loadBaseConfig();
-			yield loadEnvironmentConfig();
-			yield loadEnvironmentVariables();
-			yield loadCommandLineConfig();
-			yield loadCommandLineSwitches();
+			await loadBaseConfig();
+			await loadEnvironmentConfig();
+			await loadEnvironmentVariables();
+			await loadCommandLineConfig();
+			await loadCommandLineSwitches();
 
 			// prepare the settings
 			settings.config = cloneAndMerge([
@@ -469,15 +463,17 @@ module.exports = (function (settings) {
 			]);
 
 			return settings.config;
-		});
-
-		if (!callback) {
-			return exec;
 		}
 
-		return exec
-			.then((result) => (callback(null, result)))
-			.catch(callback);
+		// return the async function / Promise
+		if (!callback) {
+			return await exec();
+		}
+
+		// execute and return via the callback
+		return exec()
+			.then((result) => callback(null, result))
+			.catch((ex) => callback(ex));
 	};
 
 	return settings;

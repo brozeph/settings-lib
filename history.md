@@ -1,3 +1,7 @@
+# v1.0.0 / 2019-01-04
+
+* Modernized code, removed `co` dependency and moved to `babel` for transpilation
+
 # v0.3.0 / 2016-04-20
 
 * Added alias of `baseSettingsPath` (in addition to `baseConfigPath`)
