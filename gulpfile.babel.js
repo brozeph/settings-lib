@@ -1,6 +1,5 @@
 import { dest, series, src } from 'gulp';
 import babel from 'gulp-babel';
-import coveralls from 'gulp-coveralls';
 import del from 'gulp-clean';
 import eslint from 'gulp-eslint';
 import sourcemaps from 'gulp-sourcemaps';
@@ -25,12 +24,7 @@ function lint () {
 		.pipe(eslint.failAfterError());
 }
 
-function reportCoverage () {
-	return src(['reports/lcov.info']).pipe(coveralls());
-}
-
 exports.build = build;
 exports.clean = clean;
 exports.default = series(clean, lint, build);
 exports.lint = lint;
-exports.reportCoverage = reportCoverage;

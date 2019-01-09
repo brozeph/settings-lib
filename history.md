@@ -1,3 +1,7 @@
+# v1.0.2 / 2019-01-09
+
+* Removed `gulp-coveralls` dependency to eliminate potential security risks
+
 # v1.0.1 / 2019-01-07
 
 * Fixed reference to main in `package.json`

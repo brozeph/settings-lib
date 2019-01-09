@@ -2,7 +2,7 @@
   "name": "settings-lib",
   "description": "Simple library allowing override capability for application settings",
   "main": "./dist/settings.js",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Joshua Thomas (http://github.com/brozeph)",
   "license": "MIT",
   "engines": {
@@ -27,11 +27,11 @@
     "babel-cli": "^6.26.0",
     "babel-eslint": "^10.0.1",
     "chai": "^4.2.0",
+    "coveralls": "^3.0.2",
     "eslint-plugin-babel": "^5.3.0",
     "gulp": "^4.0.0",
     "gulp-babel": "^8.0.0",
     "gulp-clean": "^0.4.0",
-    "gulp-coveralls": "^0.1.4",
     "gulp-eslint": "^5.0.0",
     "gulp-sourcemaps": "^2.6.4",
     "mocha": "^5.2.0",
@@ -43,7 +43,7 @@
     "prepublish": "check-node-version --npm \">=4\" || npm run prepare",
     "pretest": "gulp clean && gulp lint",
     "test": "nyc mocha ./test/src",
-    "posttest": "gulp reportCoverage"
+    "posttest": "nyc report --reporter=text-lcov | coveralls"
   },
   "nyc": {
     "all": true,
@@ -61,5 +61,5 @@
       "@babel/register"
     ],
     "sourceMap": true
-}
+  }
 }
