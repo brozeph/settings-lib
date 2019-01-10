@@ -12,7 +12,7 @@ describe('settings', function () {
 
 	beforeEach(function () {
 		defaultOptions = {
-			baseConfigPath : 'test/baseConfig.json'
+			baseSettingsPath : 'test/baseConfig.json'
 		};
 	});
 
@@ -36,7 +36,7 @@ describe('settings', function () {
 		});
 	});
 
-	describe('options.baseConfigPath', function() {
+	describe('options.baseSettingsPath', function() {
 		it('should load a base config', function (done) {
 			settingsLib.initialize(defaultOptions, function (err, settings) {
 				should.not.exist(err);
@@ -48,7 +48,7 @@ describe('settings', function () {
 		});
 
 		it('should throw exception if a base config path is supplied but not found', function (done) {
-			defaultOptions.baseConfigPath = 'config.not.there.json';
+			defaultOptions.baseSettingsPath = 'config.not.there.json';
 			settingsLib.initialize(defaultOptions, function (err, settings) {
 				should.exist(err);
 				should.not.exist(settings);
@@ -524,6 +524,43 @@ describe('settings', function () {
 
 					return done();
 				});
+		});
+	});
+
+	describe('options.strict', function() {
+		it('should apply only when baseSettingsPath is provided', function (done) {
+			defaultOptions.environmentSearchPaths = ['./test'];
+			defaultOptions.strict = false;
+			process.env.NODE_ENV = 'test';
+
+			settingsLib.initialize(defaultOptions, function (err, settings) {
+				should.not.exist(err);
+				should.exist(settings);
+				should.exist(settings['test-key']);
+				should.exist(settings.sub['sub-test-key']);
+				settings.sub['sub-test-key'].should.equal('sub-test-value-override');
+				should.exist(settings['extra-key']);
+				should.exist(settings['extra-key']['sub-extra-key']);
+
+				return done();
+			});
+		});
+
+		it('should ignore additional keys defined in environment override files', function (done) {
+			defaultOptions.environmentSearchPaths = ['./test'];
+			defaultOptions.strict = true;
+			process.env.NODE_ENV = 'test';
+
+			settingsLib.initialize(defaultOptions, function (err, settings) {
+				should.not.exist(err);
+				should.exist(settings);
+				should.exist(settings['test-key']);
+				should.exist(settings.sub['sub-test-key']);
+				settings.sub['sub-test-key'].should.equal('sub-test-value-override');
+				should.not.exist(settings['extra-key']);
+
+				return done();
+			});
 		});
 	});
 });

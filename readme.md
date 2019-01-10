@@ -1,10 +1,10 @@
 # Settings Library
 
-This library intends to allow configuration settings from multiple config sources to be combined, in layers, starting with a base configuration, adding environment settings to that and finally applying command line settings.
+This library provides easy access to configuration from multiple sources and combines them, like layers, starting with a base, adding environment settings over the top and finally applying any command line switches that have been configured. While not limited or constrained to a specific approach, this library may be used to easily facilitate [The Twelve-Factor App](https://12factor.net/config) configuration methodology in your applications.
 
 A base configuration file can be specified that contains settings necessary for development. Subsequent configuration can be applied to augment and override configuration settings in the base config, either via NODE_ENV, other environment variables, via command line switches or all of the above!
 
-This module is useful in that it allows you to abstract configuration management from your application and deployment at runtime, thus enabling you to avoid checking in sensitive configuration values (i.e. usernames, passwords, secret keys, etc.) to source control.
+This module is useful in that it allows you to abstract configuration management from your application and deployment at runtime, thus enabling you to avoid checking in sensitive configuration values (i.e. usernames, passwords, secret keys, etc.) to source control. Effectively, one should never commit configuration values into a source code repository and the litmus test for [The Twelve-Factor App](https://12factor.net/config) methodology is that the codebase could be made open source, at any moment, without compromising security credentials.
 
 [![Build Status](https://secure.travis-ci.org/brozeph/settings-lib.png)](http://travis-ci.org/brozeph/settings-lib)
 [![Coverage Status](https://coveralls.io/repos/brozeph/settings-lib/badge.png)](https://coveralls.io/r/brozeph/settings-lib)
@@ -12,27 +12,31 @@ This module is useful in that it allows you to abstract configuration management
 ## Installation
 
 ```Javascript
-npm install settings-lib
+npm install --save settings-lib
 ```
 
 ## Usage
 
+### initialize
+
+The `initialize` method will read in all configuration, from each source, compile the details and then return a configuration Javascript object for subsequent usage within your application. This method supports an optional callback, can be executed as a Promise or can return from an async/await call.
+
+Below is an example using a callback:
+
 ```Javascript
-var
-  settings = require('settings-lib'),
-  options = { baseSettingsPath : './config/config.json' };
+const options = { baseSettingsPath : './config/config.json' };
+const settings = require('settings-lib'),
 
 settings.initialize(options, function (err, config) {
   // work with config
 });
 ```
 
-The settings-lib also supports promises natively (as of v0.2.0):
+The `initialize` method also supports promises natively:
 
 ```Javascript
-let
-  settings = require('settings-lib'),
-  options = { baseSettingsPath : './settings/settings.json' };
+const options = { baseSettingsPath : './config/config.json' };
+const settings = require('settings-lib'),
 
 settings
   .initialize(options)
@@ -44,9 +48,28 @@ settings
   });
 ```
 
+The `initialize` method may also be called within an `async` function:
+
+```javascript
+import settings from 'settings-lib';
+
+const options = { baseSettingsPath : './config/config.json' };
+
+async function main () {
+  let config;
+
+  try {
+    config = await settings.initialize(options);
+    // work with config
+  } catch (ex) {
+    // handle any loading / parsing errors
+  }
+}
+```
+
 ## Options
 
-The `options` parameter is optional. When it is not supplied or when only a portion of it is supplied, the default options take precidence.
+The `options` parameter is optional. When it is not supplied or when only a portion of it is supplied, the default values (as shown below) take precidence for any fields that are missing.
 
 ```Javascript
 defaultOptions = {
@@ -54,17 +77,22 @@ defaultOptions = {
   commandLineSwitches : ['--config-file'],
   environmentSearchPaths : ['./', './config', './settings'],
   readCommandLineMap : {},
-  readEnvironmentMap : {}
+  readEnvironmentMap : {},
+  strict : false
 };
 ```
 
-### Base Config Path
+### Base Settings Path
 
-The base configuration path is specified as a single string value in the options object passed to settings via `initialize(options, callback)`. If no baseSettingsPath field exists or the value is blank, the settings library will attempt to construct configuration via environment based configuration and command line based configuration.
+The base configuration (`baseSettingsPath`) is specified as a file path in the options object when calling `initialize(options, callback)`. If no `baseSettingsPath` field exists or the value is blank, the settings library will attempt to construct configuration via environment based configuration and command line based configuration. The base settings path may be either a YAML (`.yml`) or JSON (`.json`) file.
+
+### Strict
+
+The strict value works in conjunction with the `baseSettingsPath` provided via the options. When `strict` is specified as `true`, only the fields defined in the `baseSettingsPath` configuration file will be used and can be overridden when all settings from various sources are combined. This means that additional settings values that are defined in the environment specific override (i.e. `develop.json` when `NODE_ENV=develop` exists) will be ignored if the keys aren't specified in the file at the `baseSettingsPath`. By default, the value of `strict` is set to `false` and any new key/value pairs present in the environment override files augment and are added to the base settings when not originally specified.
 
 ### Environment Search Paths
 
-Environment search paths are supplied as an array to the field `environmentSearchPaths` in the options parameter. When specified, any value supplied in the `NODE_ENV` environment variable will be used to attempt to locate a `.json` file.
+Environment search paths are supplied as an array to the field `environmentSearchPaths` in the options parameter. When specified, any value supplied in the `NODE_ENV` environment variable will be used to attempt to locate a similarly named `.json` or a `.yml` file. If both a `.json` file and a `.yml` file exist, both files will be loaded and the `.yml` file values will override any of those specified in the `.json` file.
 
 For example, notice the following command line:
 

@@ -1,7 +1,10 @@
 import fs from 'fs';
 import path from 'path';
+import YAML from 'yaml';
 
-const DEFAULT_ARGV_START_POSITION = 2;
+const
+	DEFAULT_ARGV_START_POSITION = 2,
+	RE_YAML = /^\.ya?ml$/i;
 
 /**
  * Primary module
@@ -13,7 +16,8 @@ module.exports = (function (settings) {
 			commandLineSwitches : ['--config-file'],
 			environmentSearchPaths : ['./', './config', './settings'],
 			readCommandLineMap : {},
-			readEnvironmentMap : {}
+			readEnvironmentMap : {},
+			strict : false
 		},
 		defaultTypesMap = {};
 
@@ -97,22 +101,32 @@ module.exports = (function (settings) {
 	 * each subsequent object having priority
 	 *
 	 * @param {Array} objectList - accepts array of objects
+	 * @param {boolean} stripEmptyObjects - when true, removes empty objects from cloned result
 	 * @returns {Object} a newly cloned object with the merged results
 	 **/
-	function cloneAndMerge (objectList) {
+	function cloneAndMerge (objectList, stripEmptyObjects) {
 		if (!Array.isArray(objectList)) {
 			return objectList;
 		}
 
 		let
+			checkStrict = settings.options && settings.options.baseSettingsPath && settings.options.strict,
 			cloned = {},
-			cloner = function (source, destination) {
+			cloner = function (source, destination, prefix, ensureKey) {
 				Object.keys(source).forEach(function (key) {
+					let objectKeyPath = prefix ? [prefix, key].join('.') : key;
+
 					if (Array.isArray(source[key])) {
 						destination[key] = source[key];
 					} else if (typeof source[key] === 'object' && source[key] !== null) {
-						destination[key] = cloner(source[key], destination[key] || {});
-					} else {
+						destination[key] = cloner(source[key], destination[key] || {}, objectKeyPath, ensureKey);
+
+						// remove empty objects when applicable...
+						if (!Object.keys(destination[key]).length && stripEmptyObjects) {
+							delete destination[key];
+						}
+
+					} else if (!ensureKey || isKeyInBase(objectKeyPath)) {
 						destination[key] = source[key];
 					}
 				});
@@ -120,9 +134,9 @@ module.exports = (function (settings) {
 				return destination;
 			};
 
-		objectList.forEach(function (item) {
+		objectList.forEach(function (item, i) {
 			if (typeof item === 'object') {
-				cloned = cloner(item, cloned);
+				cloned = cloner(item, cloned, '', i !== 0 && checkStrict);
 			}
 		});
 
@@ -193,21 +207,37 @@ module.exports = (function (settings) {
 		return new Promise((resolve, reject) => {
 			let
 				chunks = [],
-				fileRead = fs.createReadStream(filePath, { encoding : 'utf8' }),
-				json;
+				data,
+				fileRead = fs.createReadStream(filePath, { encoding : 'utf8' });
 
 			fileRead.on('data', (chunk) => (chunks.push(chunk)));
 
 			fileRead.on('end', () => {
+				let content = chunks.join('');
+
+				// attempt to load and parse if it is a YAML file
+				if (RE_YAML.test(path.extname(filePath))) {
+					try {
+						data = YAML.parse(content, { merge : true });
+					} catch (ex) {
+						return reject(
+							new Error(
+								`settings-lib: unable to parse YAML settings: ${ex.message}`));
+					}
+
+					return resolve(data);
+				}
+
+				// otherwise, attempt to parse as JSON
 				try {
-					json = JSON.parse(chunks.join(''));
+					data = JSON.parse(content);
 				} catch (ex) {
 					return reject(
 						new Error(
 							`settings-lib: unable to parse JSON settings: ${ex.message}`));
 				}
 
-				return resolve(json);
+				return resolve(data);
 			});
 
 			fileRead.on('error', (err) => {
@@ -216,6 +246,10 @@ module.exports = (function (settings) {
 						`settings-lib: unable to read settings file: ${err.message}`));
 			});
 		});
+	}
+
+	function isKeyInBase (key) {
+		return typeof defaultTypesMap[key] !== 'undefined';
 	}
 
 	/**
@@ -347,6 +381,7 @@ module.exports = (function (settings) {
 
 			return Promise.all(
 				settings.options.environmentSearchPaths
+					// check for .json files...
 					.map((searchPath) => {
 						let environmentOverridePath = path.resolve([
 							path.join(searchPath, process.env.NODE_ENV),
@@ -363,7 +398,25 @@ module.exports = (function (settings) {
 								.catch(reject);
 						});
 					})
-				).then((resultsList) => {
+					.concat(settings.options.environmentSearchPaths
+							// check for .yml files...
+							.map((searchPath) => {
+								let environmentOverridePath = path.resolve([
+									path.join(searchPath, process.env.NODE_ENV),
+									'.yml'].join(''));
+
+								return new Promise((resolve, reject) => {
+									return checkIfFileExists(environmentOverridePath)
+										.then((exists) => {
+											return resolve({
+												exists,
+												path : environmentOverridePath
+											});
+										})
+										.catch(reject);
+								});
+							})))
+				.then((resultsList) => {
 					let validPaths = resultsList.filter((result) => (result.exists));
 
 					if (!validPaths.length) {
@@ -460,7 +513,7 @@ module.exports = (function (settings) {
 				settings.baseConfig || {},
 				settings.environmentConfig || {},
 				settings.commandLineConfig || {}
-			]);
+			], true);
 
 			return settings.config;
 		}
