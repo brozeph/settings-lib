@@ -6,19 +6,19 @@ const
 	should = chai.should();
 
 
-describe('settings', function () {
+describe('settings', () => {
 
 	let defaultOptions;
 
-	beforeEach(function () {
+	beforeEach(() => {
 		defaultOptions = {
-			baseConfigPath : 'test/baseConfig.json'
+			baseSettingsPath : 'test/baseConfig.json'
 		};
 	});
 
-	describe('#initialize', function () {
-		it('should allow initialization with null options', function (done) {
-			settingsLib.initialize(null, function (err, settings) {
+	describe('#initialize', () => {
+		it('should allow initialization with null options', (done) => {
+			settingsLib.initialize(null, (err, settings) => {
 				should.not.exist(err);
 				should.exist(settings);
 
@@ -26,8 +26,8 @@ describe('settings', function () {
 			});
 		});
 
-		it('should allow initialization with undefined options', function (done) {
-			settingsLib.initialize(function (err, settings) {
+		it('should allow initialization with undefined options', (done) => {
+			settingsLib.initialize((err, settings) => {
 				should.not.exist(err);
 				should.exist(settings);
 
@@ -36,9 +36,9 @@ describe('settings', function () {
 		});
 	});
 
-	describe('options.baseConfigPath', function() {
-		it('should load a base config', function (done) {
-			settingsLib.initialize(defaultOptions, function (err, settings) {
+	describe('options.baseSettingsPath', () => {
+		it('should load a base config', (done) => {
+			settingsLib.initialize(defaultOptions, (err, settings) => {
 				should.not.exist(err);
 				should.exist(settings);
 				should.exist(settings['test-key']);
@@ -47,9 +47,9 @@ describe('settings', function () {
 			});
 		});
 
-		it('should throw exception if a base config path is supplied but not found', function (done) {
-			defaultOptions.baseConfigPath = 'config.not.there.json';
-			settingsLib.initialize(defaultOptions, function (err, settings) {
+		it('should throw exception if a base config path is supplied but not found', (done) => {
+			defaultOptions.baseSettingsPath = 'config.not.there.json';
+			settingsLib.initialize(defaultOptions, (err, settings) => {
 				should.exist(err);
 				should.not.exist(settings);
 
@@ -57,7 +57,7 @@ describe('settings', function () {
 			});
 		});
 
-		it('should load base config (Promise)', function (done) {
+		it('should load base config (Promise)', (done) => {
 			settingsLib
 				.initialize(defaultOptions)
 				.then((settings) => {
@@ -68,15 +68,27 @@ describe('settings', function () {
 				})
 				.catch(done);
 		});
+
+		it('should load a YAML base config', (done) => {
+			defaultOptions.baseSettingsPath = 'test/baseConfig.yml';
+
+			settingsLib.initialize(defaultOptions, (err, settings) => {
+				should.not.exist(err);
+				should.exist(settings);
+				should.exist(settings['test-key']);
+
+				return done();
+			});
+		});
 	});
 
-	describe('options.environmentSearchPaths', function () {
-		it('should not load environment config if environment config file not found', function (done) {
+	describe('options.environmentSearchPaths', () => {
+		it('should not load environment config if environment config file not found', (done) => {
 			process.env.NODE_ENV = 'test';
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.not.exist(err);
 					should.exist(settings);
 					should.not.exist(settingsLib.environmentConfig);
@@ -87,13 +99,13 @@ describe('settings', function () {
 				});
 		});
 
-		it('should load environment config if present', function (done) {
+		it('should load environment config if present', (done) => {
 			process.env.NODE_ENV = 'test';
 			defaultOptions.environmentSearchPaths = ['./test'];
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.not.exist(err);
 					should.exist(settings);
 					should.exist(settingsLib.environmentConfig);
@@ -104,13 +116,13 @@ describe('settings', function () {
 				});
 		});
 
-		it('should choke loading badly formatted environment config file', function (done) {
+		it('should choke loading badly formatted environment config file', (done) => {
 			process.env.NODE_ENV = 'bad';
 			defaultOptions.environmentSearchPaths = ['./test'];
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.exist(err);
 					should.not.exist(settings);
 
@@ -121,13 +133,13 @@ describe('settings', function () {
 				});
 		});
 
-		it('should override base config with environment config', function (done) {
+		it('should override base config with environment config', (done) => {
 			process.env.NODE_ENV = 'test';
 			defaultOptions.environmentSearchPaths = ['./test'];
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.not.exist(err);
 					should.exist(settings);
 					should.exist(settingsLib.environmentConfig);
@@ -139,10 +151,10 @@ describe('settings', function () {
 				});
 		});
 
-		it('should not set environment config on library when no environment is specified', function (done) {
+		it('should not set environment config on library when no environment is specified', (done) => {
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.not.exist(err);
 					should.exist(settings);
 					should.not.exist(settingsLib.environmentConfig);
@@ -152,13 +164,13 @@ describe('settings', function () {
 				});
 		});
 
-		it('should use last match if multiple environment override files are found based on environment', function (done) {
+		it('should use last match if multiple environment override files are found based on environment', (done) => {
 			process.env.NODE_ENV = 'test';
 			defaultOptions.environmentSearchPaths = ['./test', './test/multiple-env-path-test'];
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.not.exist(err);
 					should.exist(settings);
 					should.exist(settings['test-key']);
@@ -170,16 +182,35 @@ describe('settings', function () {
 					return done();
 				});
 		});
+
+		it('should load a YAML override file if found based on environment', (done) => {
+			process.env.NODE_ENV = 'another-test';
+			defaultOptions.environmentSearchPaths = ['./test'];
+
+			settingsLib.initialize(
+				defaultOptions,
+				(err, settings) => {
+					should.not.exist(err);
+					should.exist(settings);
+					should.exist(settingsLib.environmentConfig);
+					settings['test-key'].should.equal('test-value-override');
+					settings.sub['sub-test-key'].should.equal('sub-test-value-override');
+
+					delete process.env.NODE_ENV;
+
+					return done();
+				});
+		});
 	});
 
-	describe('options.commandLineSwitches', function () {
-		it('should load command line config if present', function (done) {
+	describe('options.commandLineSwitches', () => {
+		it('should load command line config if present', (done) => {
 			process.argv.push('--config-file');
 			process.argv.push('./test/test2.json');
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.not.exist(err);
 					should.exist(settings);
 					should.exist(settingsLib.commandLineConfig);
@@ -191,13 +222,13 @@ describe('settings', function () {
 				});
 		});
 
-		it('should choke loading command line config if file not found', function (done) {
+		it('should choke loading command line config if file not found', (done) => {
 			process.argv.push('--config-file');
 			process.argv.push('./test/test2.not.there.json');
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.exist(err);
 					should.not.exist(settings);
 
@@ -208,13 +239,13 @@ describe('settings', function () {
 				});
 		});
 
-		it('should override base config with command line config', function (done) {
+		it('should override base config with command line config', (done) => {
 			process.argv.push('--config-file');
 			process.argv.push('./test/test2.json');
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.not.exist(err);
 					should.exist(settings);
 					should.exist(settingsLib.commandLineConfig);
@@ -227,7 +258,7 @@ describe('settings', function () {
 				});
 		});
 
-		it('should override both base and environment config with command line config', function (done) {
+		it('should override both base and environment config with command line config', (done) => {
 			process.argv.push('--config-file');
 			process.argv.push('./test/test2.json');
 			process.env.NODE_ENV = 'test';
@@ -235,7 +266,7 @@ describe('settings', function () {
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.not.exist(err);
 					should.exist(settings);
 					should.exist(settingsLib.commandLineConfig);
@@ -250,13 +281,13 @@ describe('settings', function () {
 				});
 		});
 
-		it('should choke loading badly formatted command line config file', function (done) {
+		it('should choke loading badly formatted command line config file', (done) => {
 			process.argv.push('--config-file');
 			process.argv.push('./test/bad.json');
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.exist(err);
 					should.not.exist(settings);
 
@@ -267,7 +298,7 @@ describe('settings', function () {
 				});
 		});
 
-		it('should do nothing if commandLineSwitches is not an array', function (done) {
+		it('should do nothing if commandLineSwitches is not an array', (done) => {
 			process.argv.push('--config-file');
 			process.argv.push('./test/badly.formed.json');
 
@@ -275,7 +306,7 @@ describe('settings', function () {
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.not.exist(err);
 					should.exist(settings);
 					should.not.exist(settingsLib.commandLineConfig);
@@ -288,15 +319,15 @@ describe('settings', function () {
 		});
 	});
 
-	describe('options.readEnvironmentMap', function () {
-		it('should allow mapping to be specified at initialization', function (done) {
+	describe('options.readEnvironmentMap', () => {
+		it('should allow mapping to be specified at initialization', (done) => {
 			defaultOptions.readEnvironmentMap = {
 				test : 'test'
 			};
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.not.exist(err);
 					should.exist(settings);
 					should.exist(settingsLib.options.readEnvironmentMap);
@@ -308,7 +339,7 @@ describe('settings', function () {
 				});
 		});
 
-		it('when specified, should read environment variables matching config', function (done) {
+		it('when specified, should read environment variables matching config', (done) => {
 			defaultOptions.readEnvironmentMap = {
 				'APP_SUB_SUB_TEST_KEY' : 'sub["sub-test"]["sub-test-key"]',
 				'APP_SUB_TEST_KEY' : 'sub.sub-test-key'
@@ -319,7 +350,7 @@ describe('settings', function () {
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.not.exist(err);
 					should.exist(settings);
 					settings['test-key'].should.equal('test-value');
@@ -335,7 +366,7 @@ describe('settings', function () {
 				});
 		});
 
-		it('should coerce to type found in base config', function (done) {
+		it('should coerce to type found in base config', (done) => {
 			defaultOptions.readEnvironmentMap = {
 				'COERCE_ARRAY' : 'sub.sub-sub.sub-sub-test-array',
 				'COERCE_BOOL' : 'sub.sub-sub.sub-sub-test-bool',
@@ -348,7 +379,7 @@ describe('settings', function () {
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.not.exist(err);
 					should.exist(settings);
 
@@ -371,7 +402,7 @@ describe('settings', function () {
 				});
 		});
 
-		it('should apply environment variables over environment config', function (done) {
+		it('should apply environment variables over environment config', (done) => {
 			defaultOptions.readEnvironmentMap = {
 				'APP_SUB_EXTRA_KEY' : 'extra-key.sub-extra-key'
 			};
@@ -382,7 +413,7 @@ describe('settings', function () {
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.not.exist(err);
 					should.exist(settings);
 					settings['test-key'].should.equal('test-value-override');
@@ -398,7 +429,7 @@ describe('settings', function () {
 				});
 		});
 
-		it('should create config for environment mappings when base config key does not exist', function (done) {
+		it('should create config for environment mappings when base config key does not exist', (done) => {
 			defaultOptions.readEnvironmentMap = {
 				'APP_NO_KEY' : 'no-key.sub-no-key'
 			};
@@ -407,7 +438,7 @@ describe('settings', function () {
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.not.exist(err);
 					should.exist(settings['no-key']);
 					should.exist(settings['no-key']['sub-no-key']);
@@ -421,15 +452,15 @@ describe('settings', function () {
 		});
 	});
 
-	describe('options.readCommandLineMap', function () {
-		it('should allow mapping to be specified at initialization', function (done) {
+	describe('options.readCommandLineMap', () => {
+		it('should allow mapping to be specified at initialization', (done) => {
 			defaultOptions.readCommandLineMap = {
 				test : 'test'
 			};
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.not.exist(err);
 					should.exist(settings);
 					should.exist(settingsLib.options.readCommandLineMap);
@@ -441,7 +472,7 @@ describe('settings', function () {
 				});
 		});
 
-		it('when specified, should read command line switches matching config', function (done) {
+		it('when specified, should read command line switches matching config', (done) => {
 			var paramCount = 4;
 
 			defaultOptions.readCommandLineMap = {
@@ -457,7 +488,7 @@ describe('settings', function () {
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.not.exist(err);
 					should.exist(settings);
 					settings['test-key'].should.equal('test-value');
@@ -473,7 +504,7 @@ describe('settings', function () {
 				});
 		});
 
-		it('should apply command line switches over command line config', function (done) {
+		it('should apply command line switches over command line config', (done) => {
 			var paramCount = 4;
 
 			defaultOptions.readCommandLineMap = {
@@ -487,7 +518,7 @@ describe('settings', function () {
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.not.exist(err);
 					should.exist(settings);
 					settings['test-key'].should.equal('test-value-override');
@@ -503,7 +534,7 @@ describe('settings', function () {
 				});
 		});
 
-		it('should create config for command line switches when base config key does not exist', function (done) {
+		it('should create config for command line switches when base config key does not exist', (done) => {
 			defaultOptions.readCommandLineMap = {
 				'--no-key' : 'no-key.sub-no-key'
 			};
@@ -513,7 +544,7 @@ describe('settings', function () {
 
 			settingsLib.initialize(
 				defaultOptions,
-				function (err, settings) {
+				(err, settings) => {
 					should.not.exist(err);
 					should.exist(settings['no-key']);
 					should.exist(settings['no-key']['sub-no-key']);
@@ -524,6 +555,43 @@ describe('settings', function () {
 
 					return done();
 				});
+		});
+	});
+
+	describe('options.strict', () => {
+		it('should apply only when baseSettingsPath is provided', (done) => {
+			defaultOptions.environmentSearchPaths = ['./test'];
+			defaultOptions.strict = false;
+			process.env.NODE_ENV = 'test';
+
+			settingsLib.initialize(defaultOptions, (err, settings) => {
+				should.not.exist(err);
+				should.exist(settings);
+				should.exist(settings['test-key']);
+				should.exist(settings.sub['sub-test-key']);
+				settings.sub['sub-test-key'].should.equal('sub-test-value-override');
+				should.exist(settings['extra-key']);
+				should.exist(settings['extra-key']['sub-extra-key']);
+
+				return done();
+			});
+		});
+
+		it('should ignore additional keys defined in environment override files', (done) => {
+			defaultOptions.environmentSearchPaths = ['./test'];
+			defaultOptions.strict = true;
+			process.env.NODE_ENV = 'test';
+
+			settingsLib.initialize(defaultOptions, (err, settings) => {
+				should.not.exist(err);
+				should.exist(settings);
+				should.exist(settings['test-key']);
+				should.exist(settings.sub['sub-test-key']);
+				settings.sub['sub-test-key'].should.equal('sub-test-value-override');
+				should.not.exist(settings['extra-key']);
+
+				return done();
+			});
 		});
 	});
 });

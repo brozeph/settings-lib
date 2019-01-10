@@ -1,3 +1,8 @@
+# v1.1.0 / 2019-01-09
+
+* Added support for YAML files
+* Added `strict` option for ensuring only `baseSettingsPath` keys are overriden in the resulting settings when `true`
+
 # v1.0.2 / 2019-01-09
 
 * Removed `gulp-coveralls` dependency to eliminate potential security risks
