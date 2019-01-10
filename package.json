@@ -11,7 +11,11 @@
   "keywords": [
     "settings",
     "config",
-    "override"
+    "override",
+    "twelve-factor",
+    "yaml",
+    "json",
+    "environment"
   ],
   "repository": "git://github.com/brozeph/settings-lib.git",
   "homepage": "http://github.com/brozeph/settings-lib",

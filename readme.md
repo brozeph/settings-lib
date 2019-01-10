@@ -1,6 +1,6 @@
 # Settings Library
 
-This library provides easy access to configuration from multiple sources and combines them, like layers, starting with a base, adding environment settings over the top and finally applying any command line switches that have been configured. While not limited or constrained to a specific approach, this library may be used to easily facilitate [The Twelve-Factor App](https://12factor.net/config) configuration methodology in your applications.
+This library provides easy access to configuration from multiple sources (JSON, YAML, environment variables or command line switch parameters) and combines them, in layers, starting with a base file (if provided), adding environment settings to this and finally applying any command line switches that have been configured. While not limited or constrained to a specific approach, this library may be used to easily facilitate [The Twelve-Factor App](https://12factor.net/config) configuration methodology in your applications.
 
 A base configuration file can be specified that contains settings necessary for development. Subsequent configuration can be applied to augment and override configuration settings in the base config, either via NODE_ENV, other environment variables, via command line switches or all of the above!
 
@@ -92,7 +92,7 @@ The strict value works in conjunction with the `baseSettingsPath` provided via t
 
 ### Environment Search Paths
 
-Environment search paths are supplied as an array to the field `environmentSearchPaths` in the options parameter. When specified, any value supplied in the `NODE_ENV` environment variable will be used to attempt to locate a similarly named `.json` or a `.yml` file. If both a `.json` file and a `.yml` file exist, both files will be loaded and the `.yml` file values will override any of those specified in the `.json` file.
+Environment search paths are supplied as an array to the field `environmentSearchPaths` in the options parameter. When specified, any value supplied in the `NODE_ENV` environment variable will be used to attempt to locate a similarly named `.json` or a `.yml` file. If both a `.json` file and a `.yml` file exist, the `.yml` file values will be the ones loaded.
 
 For example, notice the following command line:
 
@@ -100,7 +100,7 @@ For example, notice the following command line:
 NODE_ENV=develop node app.js
 ```
 
-In the above example, settings-lib will attempt to locate a file named `develop.json` in each of the supplied environment search paths. The first configuration file found will be the one used, so if there are multiple matches, only one configuration file (the first matched) will be used. In the above example, if a file exists in `./config/develop.json`, that file will be loaded and will override any settings specified in the base configuration.
+In the above example, settings-lib will attempt to locate a file named `develop.json` in each of the supplied environment search paths. The latest configuration file found will be the one used, so if there are multiple matches, only one configuration file (the last one matched) will be used. In the above example, if a file exists in `./config/develop.json`, that file will be loaded and will override any settings specified in the base configuration. If there exists both a `./config/develop.json` and a `./config/develop.yml`, the the YAML file will be used.
 
 ### Command Line Switches
 
