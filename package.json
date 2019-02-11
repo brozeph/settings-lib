@@ -6,7 +6,7 @@
   "author": "Joshua Thomas (http://github.com/brozeph)",
   "license": "MIT",
   "engines": {
-    "node": ">=4.0"
+    "node": ">=6.0"
   },
   "keywords": [
     "settings",
@@ -30,6 +30,7 @@
     "@babel/register": "^7.0.0",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^10.0.1",
+    "babel-plugin-istanbul": "^5.1.0",
     "chai": "^4.2.0",
     "coveralls": "^3.0.2",
     "eslint-plugin-babel": "^5.3.0",
@@ -43,18 +44,18 @@
   },
   "scripts": {
     "lint": "gulp lint",
-    "prepare": "gulp build",
-    "prepublish": "check-node-version --npm \">=4\" || npm run prepare",
+    "posttest": "nyc report --reporter=text-lcov | coveralls",
+    "prepublish": "gulp build",
     "pretest": "gulp clean && gulp lint",
-    "test": "nyc mocha ./test/src",
-    "posttest": "nyc report --reporter=text-lcov | coveralls"
+    "test": "NODE_ENV=test nyc mocha ./test/src",
+    "test:unit": "NODE_ENV=test nyc mocha ./test/src"
   },
   "nyc": {
     "all": true,
     "include": [
       "src"
     ],
-    "instrument": true,
+    "instrument": false,
     "report-dir": "./reports",
     "reporter": [
       "lcov",
