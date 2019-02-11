@@ -2,11 +2,11 @@
   "name": "settings-lib",
   "description": "Simple library allowing override capability for application settings",
   "main": "./dist/settings.js",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "Joshua Thomas (http://github.com/brozeph)",
   "license": "MIT",
   "engines": {
-    "node": ">=4.0"
+    "node": ">=6.0"
   },
   "keywords": [
     "settings",
@@ -20,8 +20,7 @@
   "repository": "git://github.com/brozeph/settings-lib.git",
   "homepage": "http://github.com/brozeph/settings-lib",
   "dependencies": {
-    "@babel/polyfill": "^7.2.5",
-    "@babel/runtime": "^7.2.0",
+    "@babel/runtime-corejs2": "^7.3.1",
     "yaml": "^1.2.0"
   },
   "devDependencies": {
@@ -31,6 +30,7 @@
     "@babel/register": "^7.0.0",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^10.0.1",
+    "babel-plugin-istanbul": "^5.1.0",
     "chai": "^4.2.0",
     "coveralls": "^3.0.2",
     "eslint-plugin-babel": "^5.3.0",
@@ -44,18 +44,18 @@
   },
   "scripts": {
     "lint": "gulp lint",
-    "prepare": "gulp build",
-    "prepublish": "check-node-version --npm \">=4\" || npm run prepare",
+    "posttest": "nyc report --reporter=text-lcov | coveralls",
+    "prepublish": "gulp build",
     "pretest": "gulp clean && gulp lint",
-    "test": "nyc mocha ./test/src",
-    "posttest": "nyc report --reporter=text-lcov | coveralls"
+    "test": "NODE_ENV=test nyc mocha ./test/src",
+    "test:unit": "NODE_ENV=test nyc mocha ./test/src"
   },
   "nyc": {
     "all": true,
     "include": [
       "src"
     ],
-    "instrument": true,
+    "instrument": false,
     "report-dir": "./reports",
     "reporter": [
       "lcov",
@@ -65,6 +65,6 @@
     "require": [
       "@babel/register"
     ],
-    "sourceMap": true
+    "sourceMap": false
   }
 }

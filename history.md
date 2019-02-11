@@ -1,3 +1,7 @@
+# v1.1.1 / 2019-02-11
+
+* Adjusted babel dependencies to remove polyfill in favor of runtime
+
 # v1.1.0 / 2019-01-09
 
 * Added support for YAML files
