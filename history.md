@@ -1,3 +1,8 @@
+# v1.1.2 / 2020-03-13
+
+* Updated dependencies
+* Updated Node versions in Travis configuration
+
 # v1.1.1 / 2019-02-11
 
 * Adjusted babel dependencies to remove polyfill in favor of runtime
