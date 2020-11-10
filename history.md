@@ -1,3 +1,7 @@
+# v1.1.4 / 2020-11-10
+
+* Updated dependencies
+
 # v1.1.3 / 2020-10-06
 
 * Updated dependencies
