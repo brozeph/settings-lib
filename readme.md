@@ -116,7 +116,7 @@ In the above example, settings-lib will attempt to locate the file specifed (`./
 
 ### Read Environment Mapping
 
-In the event that you wish to override specific configuration keys directly via an environment variable, simply specify and environment variable mapping in the options when initializing the module:
+In the event that you wish to override specific configuration keys directly via an environment variable, specify and environment variable mapping in the options when initializing the module:
 
 ```Javascript
 var
@@ -133,7 +133,7 @@ settings.initialize(options, function (err, config) {
 });
 ```
 
-When executing your node application, simply supply the configured environment variable:
+When executing your node application, supply the configured environment variable:
 
 ```Bash
 APP_HOSTNAME=myapp.mydomain.com node app.js
@@ -158,7 +158,7 @@ settings.initialize(options, function (err, config) {
 });
 ```
 
-When executing your node application, simply supply the configured environment variable:
+When executing your node application, supply the configured environment variable:
 
 ```Bash
 node app.js --hostname myapp.mydomain.com
