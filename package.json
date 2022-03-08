@@ -22,7 +22,7 @@
   "homepage": "http://github.com/brozeph/settings-lib",
   "scripts": {
     "lint": "gulp lint",
-    "posttest": "c8 report --reporter=text-lcov | coveralls",
+    "posttest": "c8 report --reporter=text-lcov > ./coverage/lcov.info",
     "pretest": "gulp clean && gulp lint",
     "test": "NODE_ENV=test c8 mocha ./test/src",
     "test:unit": "NODE_ENV=test mocha ./test/src"
