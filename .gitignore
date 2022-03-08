@@ -1,6 +1,5 @@
 .DS_Store
-.nyc_output
-dist
+coverage
 npm-debug.log
 lib-cov
 node_modules

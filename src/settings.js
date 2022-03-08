@@ -9,7 +9,7 @@ const
 /**
  * Primary module
  **/
-module.exports = (function (settings) {
+export default (function (settings) {
 	let
 		defaultOptions = {
 			baseSettingsPath : '',

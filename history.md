@@ -1,3 +1,8 @@
+# v2.0.0 / 2022-02-18
+
+* Bye bye Babel... using ES modules natively in Node (WARNING: not compatibile with older versions of Node.js)
+* Updated dependencies
+
 # v1.2.0 / 2021-03-19
 
 * Updated dependencies

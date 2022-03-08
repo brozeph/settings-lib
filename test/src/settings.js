@@ -595,3 +595,5 @@ describe('settings', () => {
 		});
 	});
 });
+
+export default {};
