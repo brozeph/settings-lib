@@ -11,20 +11,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [12, 14, 16]
+        node: [20, 22]
         os: [ubuntu-latest, windows-latest]
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set Node.js version
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
+          cache: 'npm'
 
       - name: Install npm dependencies
-        run: npm install # switch to `npm ci` when Node.js 6 support is dropped
+        run: npm install
 
       - name: Run lint
         run: npm run lint
@@ -33,7 +34,7 @@ jobs:
         run: npm test
 
       - name: Coveralls
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           flag-name: ${{matrix.os}}-node-${{ matrix.node }}
@@ -44,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Coveralls Finished
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel-finished: true

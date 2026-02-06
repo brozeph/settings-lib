@@ -1,9 +1,7 @@
-import chai from 'chai';
+import { expect } from 'vitest';
 import settingsLib from '../../src/settings.js';
 
-const
-	DEFAULT_ARGV_START_POSITION = 2,
-	should = chai.should();
+const DEFAULT_ARGV_START_POSITION = 2;
 
 
 describe('settings', () => {
@@ -17,248 +15,268 @@ describe('settings', () => {
 	});
 
 	describe('#initialize', () => {
-		it('should allow initialization with null options', (done) => {
-			settingsLib.initialize(null, (err, settings) => {
-				should.not.exist(err);
-				should.exist(settings);
-
-				return done();
+		it('should allow initialization with null options', async () => {
+			await new Promise((resolve) => {
+				settingsLib.initialize(null, (err, settings) => {
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+					resolve();
+				});
 			});
 		});
 
-		it('should allow initialization with undefined options', (done) => {
-			settingsLib.initialize((err, settings) => {
-				should.not.exist(err);
-				should.exist(settings);
-
-				return done();
+		it('should allow initialization with undefined options', async () => {
+			await new Promise((resolve) => {
+				settingsLib.initialize((err, settings) => {
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+					resolve();
+				});
 			});
 		});
 	});
 
 	describe('options.baseSettingsPath', () => {
-		it('should load a base config', (done) => {
-			settingsLib.initialize(defaultOptions, (err, settings) => {
-				should.not.exist(err);
-				should.exist(settings);
-				should.exist(settings['test-key']);
-
-				return done();
+		it('should load a base config', async () => {
+			await new Promise((resolve) => {
+				settingsLib.initialize(defaultOptions, (err, settings) => {
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+					expect(settings['test-key']).toBeDefined();
+					resolve();
+				});
 			});
 		});
 
-		it('should throw exception if a base config path is supplied but not found', (done) => {
+		it('should throw exception if a base config path is supplied but not found', async () => {
 			defaultOptions.baseSettingsPath = 'config.not.there.json';
-			settingsLib.initialize(defaultOptions, (err, settings) => {
-				should.exist(err);
-				should.not.exist(settings);
-
-				return done();
+			await new Promise((resolve) => {
+				settingsLib.initialize(defaultOptions, (err, settings) => {
+					expect(err).toBeTruthy();
+					expect(settings).toBeFalsy();
+					resolve();
+				});
 			});
 		});
 
-		it('should load base config (Promise)', (done) => {
-			settingsLib
-				.initialize(defaultOptions)
-				.then((settings) => {
-					should.exist(settings);
-					should.exist(settings['test-key']);
-
-					return done();
-				})
-				.catch(done);
+		it('should load base config (Promise)', async () => {
+			const settings = await settingsLib.initialize(defaultOptions);
+			expect(settings).toBeDefined();
+			expect(settings['test-key']).toBeDefined();
 		});
 
-		it('should load a YAML base config', (done) => {
+		it('should load a YAML base config', async () => {
 			defaultOptions.baseSettingsPath = 'test/baseConfig.yml';
 
-			settingsLib.initialize(defaultOptions, (err, settings) => {
-				should.not.exist(err);
-				should.exist(settings);
-				should.exist(settings['test-key']);
-
-				return done();
+			await new Promise((resolve) => {
+				settingsLib.initialize(defaultOptions, (err, settings) => {
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+					expect(settings['test-key']).toBeDefined();
+					resolve();
+				});
 			});
 		});
 	});
 
 	describe('options.environmentSearchPaths', () => {
-		it('should not load environment config if environment config file not found', (done) => {
+		it('should not load environment config if environment config file not found', async () => {
+ await new Promise((resolve) => {
 			process.env.NODE_ENV = 'test';
 
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.not.exist(err);
-					should.exist(settings);
-					should.not.exist(settingsLib.environmentConfig);
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+					expect(settingsLib.environmentConfig).toBeFalsy();
 
 					delete process.env.NODE_ENV;
 
-					return done();
+					resolve();
 				});
+			});
 		});
 
-		it('should load environment config if present', (done) => {
+		it('should load environment config if present', async () => {
+ await new Promise((resolve) => {
 			process.env.NODE_ENV = 'test';
 			defaultOptions.environmentSearchPaths = ['./test'];
 
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.not.exist(err);
-					should.exist(settings);
-					should.exist(settingsLib.environmentConfig);
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+					expect(settingsLib.environmentConfig).toBeDefined();
 
 					delete process.env.NODE_ENV;
 
-					return done();
+					resolve();
 				});
+			});
 		});
 
-		it('should choke loading badly formatted environment config file', (done) => {
+		it('should choke loading badly formatted environment config file', async () => {
+ await new Promise((resolve) => {
 			process.env.NODE_ENV = 'bad';
 			defaultOptions.environmentSearchPaths = ['./test'];
 
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.exist(err);
-					should.not.exist(settings);
+					expect(err).toBeTruthy();
+					expect(settings).toBeFalsy();
 
 					// clean up
 					delete process.env.NODE_ENV;
 
-					return done();
+					resolve();
 				});
+			});
 		});
 
-		it('should override base config with environment config', (done) => {
+		it('should override base config with environment config', async () => {
+ await new Promise((resolve) => {
 			process.env.NODE_ENV = 'test';
 			defaultOptions.environmentSearchPaths = ['./test'];
 
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.not.exist(err);
-					should.exist(settings);
-					should.exist(settingsLib.environmentConfig);
-					settings['test-key'].should.equal('test-value-override');
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+					expect(settingsLib.environmentConfig).toBeDefined();
+					expect(settings['test-key']).toBe('test-value-override');
 
 					delete process.env.NODE_ENV;
 
-					return done();
+					resolve();
 				});
+			});
 		});
 
-		it('should not set environment config on library when no environment is specified', (done) => {
+		it('should not set environment config on library when no environment is specified', async () => {
+ await new Promise((resolve) => {
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.not.exist(err);
-					should.exist(settings);
-					should.not.exist(settingsLib.environmentConfig);
-					settings['test-key'].should.equal('test-value');
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+					expect(settingsLib.environmentConfig).toBeFalsy();
+					expect(settings['test-key']).toBe('test-value');
 
-					return done();
+					resolve();
 				});
+			});
 		});
 
-		it('should use last match if multiple environment override files are found based on environment', (done) => {
+		it('should use last match if multiple environment override files are found based on environment', async () => {
+ await new Promise((resolve) => {
 			process.env.NODE_ENV = 'test';
 			defaultOptions.environmentSearchPaths = ['./test', './test/multiple-env-path-test'];
 
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.not.exist(err);
-					should.exist(settings);
-					should.exist(settings['test-key']);
-					settings['test-key'].should.equal('test-value-override');
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+				expect(settings['test-key']).toBeDefined();
+					expect(settings['test-key']).toBe('test-value-override');
 
 					// clean up
 					delete process.env.NODE_ENV;
 
-					return done();
+					resolve();
 				});
+			});
 		});
 
-		it('should load a YAML override file if found based on environment', (done) => {
+		it('should load a YAML override file if found based on environment', async () => {
+ await new Promise((resolve) => {
 			process.env.NODE_ENV = 'another-test';
 			defaultOptions.environmentSearchPaths = ['./test'];
 
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.not.exist(err);
-					should.exist(settings);
-					should.exist(settingsLib.environmentConfig);
-					settings['test-key'].should.equal('test-value-override');
-					settings.sub['sub-test-key'].should.equal('sub-test-value-override');
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+					expect(settingsLib.environmentConfig).toBeDefined();
+					expect(settings['test-key']).toBe('test-value-override');
+					expect(settings.sub['sub-test-key']).toBe('sub-test-value-override');
 
 					delete process.env.NODE_ENV;
 
-					return done();
+					resolve();
 				});
+			});
 		});
 	});
 
 	describe('options.commandLineSwitches', () => {
-		it('should load command line config if present', (done) => {
+		it('should load command line config if present', async () => {
+ await new Promise((resolve) => {
 			process.argv.push('--config-file');
 			process.argv.push('./test/test2.json');
 
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.not.exist(err);
-					should.exist(settings);
-					should.exist(settingsLib.commandLineConfig);
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+					expect(settingsLib.commandLineConfig).toBeDefined();
 
 					// clean up
 					process.argv = process.argv.slice(0, process.argv.length - DEFAULT_ARGV_START_POSITION);
 
-					return done();
+					resolve();
 				});
+			});
 		});
 
-		it('should choke loading command line config if file not found', (done) => {
+		it('should choke loading command line config if file not found', async () => {
+ await new Promise((resolve) => {
 			process.argv.push('--config-file');
 			process.argv.push('./test/test2.not.there.json');
 
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.exist(err);
-					should.not.exist(settings);
+					expect(err).toBeTruthy();
+					expect(settings).toBeFalsy();
 
 					// clean up
 					process.argv = process.argv.slice(0, process.argv.length - DEFAULT_ARGV_START_POSITION);
 
-					return done();
+					resolve();
 				});
+			});
 		});
 
-		it('should override base config with command line config', (done) => {
+		it('should override base config with command line config', async () => {
+ await new Promise((resolve) => {
 			process.argv.push('--config-file');
 			process.argv.push('./test/test2.json');
 
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.not.exist(err);
-					should.exist(settings);
-					should.exist(settingsLib.commandLineConfig);
-					settings['test-key'].should.equal('test-value-override-again');
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+					expect(settingsLib.commandLineConfig).toBeDefined();
+					expect(settings['test-key']).toBe('test-value-override-again');
 
 					// clean up
 					process.argv = process.argv.slice(0, process.argv.length - DEFAULT_ARGV_START_POSITION);
 
-					return done();
+					resolve();
 				});
+			});
 		});
 
-		it('should override both base and environment config with command line config', (done) => {
+		it('should override both base and environment config with command line config', async () => {
+ await new Promise((resolve) => {
 			process.argv.push('--config-file');
 			process.argv.push('./test/test2.json');
 			process.env.NODE_ENV = 'test';
@@ -267,38 +285,42 @@ describe('settings', () => {
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.not.exist(err);
-					should.exist(settings);
-					should.exist(settingsLib.commandLineConfig);
-					should.exist(settingsLib.environmentConfig);
-					settings['test-key'].should.equal('test-value-override-again');
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+					expect(settingsLib.commandLineConfig).toBeDefined();
+					expect(settingsLib.environmentConfig).toBeDefined();
+					expect(settings['test-key']).toBe('test-value-override-again');
 
 					// clean up
 					process.argv = process.argv.slice(0, process.argv.length - DEFAULT_ARGV_START_POSITION);
 					delete process.env.NODE_ENV;
 
-					return done();
+					resolve();
 				});
+			});
 		});
 
-		it('should choke loading badly formatted command line config file', (done) => {
+		it('should choke loading badly formatted command line config file', async () => {
+ await new Promise((resolve) => {
 			process.argv.push('--config-file');
 			process.argv.push('./test/bad.json');
 
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.exist(err);
-					should.not.exist(settings);
+					expect(err).toBeTruthy();
+					expect(settings).toBeFalsy();
 
 					// clean up
 					process.argv = process.argv.slice(0, process.argv.length - DEFAULT_ARGV_START_POSITION);
 
-					return done();
+					resolve();
 				});
+			});
 		});
 
-		it('should do nothing if commandLineSwitches is not an array', (done) => {
+		it('should do nothing if commandLineSwitches is not an array', async () => {
+ await new Promise((resolve) => {
 			process.argv.push('--config-file');
 			process.argv.push('./test/badly.formed.json');
 
@@ -307,20 +329,22 @@ describe('settings', () => {
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.not.exist(err);
-					should.exist(settings);
-					should.not.exist(settingsLib.commandLineConfig);
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+					expect(settingsLib.commandLineConfig).toBeFalsy();
 
 					// clean up
 					process.argv = process.argv.slice(0, process.argv.length - DEFAULT_ARGV_START_POSITION);
 
-					return done();
+					resolve();
 				});
+			});
 		});
 	});
 
 	describe('options.readEnvironmentMap', () => {
-		it('should allow mapping to be specified at initialization', (done) => {
+		it('should allow mapping to be specified at initialization', async () => {
+ await new Promise((resolve) => {
 			defaultOptions.readEnvironmentMap = {
 				test : 'test'
 			};
@@ -328,18 +352,20 @@ describe('settings', () => {
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.not.exist(err);
-					should.exist(settings);
-					should.exist(settingsLib.options.readEnvironmentMap);
-					should.exist(settingsLib.options.readEnvironmentMap.test);
-					settingsLib.options.readEnvironmentMap.test.should.equal(
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+					expect(settingsLib.options.readEnvironmentMap).toBeDefined();
+					expect(settingsLib.options.readEnvironmentMap.test).toBeDefined();
+					expect(settingsLib.options.readEnvironmentMap.test).toBe(
 						defaultOptions.readEnvironmentMap.test);
 
-					return done();
+					resolve();
 				});
+			});
 		});
 
-		it('when specified, should read environment variables matching config', (done) => {
+		it('when specified, should read environment variables matching config', async () => {
+ await new Promise((resolve) => {
 			defaultOptions.readEnvironmentMap = {
 				'APP_SUB_SUB_TEST_KEY' : 'sub["sub-test"]["sub-test-key"]',
 				'APP_SUB_TEST_KEY' : 'sub.sub-test-key'
@@ -351,22 +377,24 @@ describe('settings', () => {
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.not.exist(err);
-					should.exist(settings);
-					settings['test-key'].should.equal('test-value');
-					should.exist(settings.sub);
-					should.exist(settings.sub['sub-test-key']);
-					settings.sub['sub-test-key'].should.equal('overridden by environment variable');
-					should.exist(settings.sub['sub-test']['sub-test-key']);
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+					expect(settings['test-key']).toBe('test-value');
+					expect(settings.sub).toBeDefined();
+					expect(settings.sub['sub-test-key']).toBeDefined();
+					expect(settings.sub['sub-test-key']).toBe('overridden by environment variable');
+					expect(settings.sub['sub-test']['sub-test-key']).toBeDefined();
 
 					delete process.env.APP_SUB_TEST_KEY;
 					delete process.env.APP_SUB_SUB_TEST_KEY;
 
-					return done();
+					resolve();
 				});
+			});
 		});
 
-		it('should coerce to type found in base config', (done) => {
+		it('should coerce to type found in base config', async () => {
+ await new Promise((resolve) => {
 			defaultOptions.readEnvironmentMap = {
 				'COERCE_ARRAY' : 'sub.sub-sub.sub-sub-test-array',
 				'COERCE_BOOL' : 'sub.sub-sub.sub-sub-test-bool',
@@ -380,29 +408,31 @@ describe('settings', () => {
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.not.exist(err);
-					should.exist(settings);
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
 
-					should.exist(settings.sub);
-					should.exist(settings.sub['sub-sub']);
-					should.exist(settings.sub['sub-sub']['sub-sub-test-array']);
-					settings.sub['sub-sub']['sub-sub-test-array'].should.be.a('array');
+					expect(settings.sub).toBeDefined();
+					expect(settings.sub['sub-sub']).toBeDefined();
+					expect(settings.sub['sub-sub']['sub-sub-test-array']).toBeDefined();
+					expect(Array.isArray(settings.sub['sub-sub']['sub-sub-test-array'])).toBe(true);
 
-					should.exist(settings.sub['sub-sub']['sub-sub-test-bool']);
-					settings.sub['sub-sub']['sub-sub-test-bool'].should.be.a('boolean');
+					expect(settings.sub['sub-sub']['sub-sub-test-bool']).toBeDefined();
+					expect(typeof settings.sub['sub-sub']['sub-sub-test-bool']).toBe('boolean');
 
-					should.exist(settings.sub['sub-sub']['sub-sub-test-number']);
-					settings.sub['sub-sub']['sub-sub-test-number'].should.be.a('number');
+					expect(settings.sub['sub-sub']['sub-sub-test-number']).toBeDefined();
+					expect(typeof settings.sub['sub-sub']['sub-sub-test-number']).toBe('number');
 
 					delete process.env.COERCE_ARRAY;
 					delete process.env.COERCE_BOOL;
 					delete process.env.COERCE_NUMBER;
 
-					return done();
+					resolve();
 				});
+			});
 		});
 
-		it('should apply environment variables over environment config', (done) => {
+		it('should apply environment variables over environment config', async () => {
+ await new Promise((resolve) => {
 			defaultOptions.readEnvironmentMap = {
 				'APP_SUB_EXTRA_KEY' : 'extra-key.sub-extra-key'
 			};
@@ -414,22 +444,24 @@ describe('settings', () => {
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.not.exist(err);
-					should.exist(settings);
-					settings['test-key'].should.equal('test-value-override');
-					should.exist(settings['extra-key']);
-					should.exist(settings['extra-key']['sub-extra-key']);
-					settings['extra-key']['sub-extra-key']
-						.should.equal('overridden by environment variable');
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+					expect(settings['test-key']).toBe('test-value-override');
+					expect(settings['extra-key']).toBeDefined();
+					expect(settings['extra-key']['sub-extra-key']).toBeDefined();
+					expect(settings['extra-key']['sub-extra-key'])
+						.toBe('overridden by environment variable');
 
 					delete process.env.NODE_ENV;
 					delete process.env.APP_SUB_EXTRA_KEY;
 
-					return done();
+					resolve();
 				});
+			});
 		});
 
-		it('should create config for environment mappings when base config key does not exist', (done) => {
+		it('should create config for environment mappings when base config key does not exist', async () => {
+ await new Promise((resolve) => {
 			defaultOptions.readEnvironmentMap = {
 				'APP_NO_KEY' : 'no-key.sub-no-key'
 			};
@@ -439,21 +471,23 @@ describe('settings', () => {
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.not.exist(err);
-					should.exist(settings['no-key']);
-					should.exist(settings['no-key']['sub-no-key']);
-					settings['no-key']['sub-no-key']
-						.should.equal('created from environment variable');
+					expect(err).toBeFalsy();
+					expect(settings['no-key']).toBeDefined();
+					expect(settings['no-key']['sub-no-key']).toBeDefined();
+					expect(settings['no-key']['sub-no-key'])
+						.toBe('created from environment variable');
 
 					delete process.env.APP_NO_KEY;
 
-					return done();
+					resolve();
 				});
+			});
 		});
 	});
 
 	describe('options.readCommandLineMap', () => {
-		it('should allow mapping to be specified at initialization', (done) => {
+		it('should allow mapping to be specified at initialization', async () => {
+ await new Promise((resolve) => {
 			defaultOptions.readCommandLineMap = {
 				test : 'test'
 			};
@@ -461,18 +495,20 @@ describe('settings', () => {
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.not.exist(err);
-					should.exist(settings);
-					should.exist(settingsLib.options.readCommandLineMap);
-					should.exist(settingsLib.options.readCommandLineMap.test);
-					settingsLib.options.readCommandLineMap.test
-						.should.equal(defaultOptions.readCommandLineMap.test);
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+					expect(settingsLib.options.readCommandLineMap).toBeDefined();
+					expect(settingsLib.options.readCommandLineMap.test).toBeDefined();
+					expect(settingsLib.options.readCommandLineMap.test)
+						.toBe(defaultOptions.readCommandLineMap.test);
 
-					return done();
+					resolve();
 				});
+			});
 		});
 
-		it('when specified, should read command line switches matching config', (done) => {
+		it('when specified, should read command line switches matching config', async () => {
+ await new Promise((resolve) => {
 			var paramCount = 4;
 
 			defaultOptions.readCommandLineMap = {
@@ -489,22 +525,24 @@ describe('settings', () => {
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.not.exist(err);
-					should.exist(settings);
-					settings['test-key'].should.equal('test-value');
-					should.exist(settings.sub);
-					should.exist(settings.sub['sub-test-key']);
-					settings.sub['sub-test-key'].should.equal('overridden by command line switch');
-					should.exist(settings.sub['sub-test']['sub-test-key']);
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+					expect(settings['test-key']).toBe('test-value');
+					expect(settings.sub).toBeDefined();
+					expect(settings.sub['sub-test-key']).toBeDefined();
+					expect(settings.sub['sub-test-key']).toBe('overridden by command line switch');
+					expect(settings.sub['sub-test']['sub-test-key']).toBeDefined();
 
 					// clean up
 					process.argv = process.argv.slice(0, process.argv.length - paramCount);
 
-					return done();
+					resolve();
 				});
+			});
 		});
 
-		it('should apply command line switches over command line config', (done) => {
+		it('should apply command line switches over command line config', async () => {
+ await new Promise((resolve) => {
 			var paramCount = 4;
 
 			defaultOptions.readCommandLineMap = {
@@ -519,22 +557,24 @@ describe('settings', () => {
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.not.exist(err);
-					should.exist(settings);
-					settings['test-key'].should.equal('test-value-override');
-					should.exist(settings['extra-key']);
-					should.exist(settings['extra-key']['sub-extra-key']);
-					settings['extra-key']['sub-extra-key']
-						.should.equal('overridden by command line switch');
+					expect(err).toBeFalsy();
+					expect(settings).toBeDefined();
+					expect(settings['test-key']).toBe('test-value-override');
+					expect(settings['extra-key']).toBeDefined();
+					expect(settings['extra-key']['sub-extra-key']).toBeDefined();
+					expect(settings['extra-key']['sub-extra-key'])
+						.toBe('overridden by command line switch');
 
 					// clean up
 					process.argv = process.argv.slice(0, process.argv.length - paramCount);
 
-					return done();
+					resolve();
 				});
+			});
 		});
 
-		it('should create config for command line switches when base config key does not exist', (done) => {
+		it('should create config for command line switches when base config key does not exist', async () => {
+ await new Promise((resolve) => {
 			defaultOptions.readCommandLineMap = {
 				'--no-key' : 'no-key.sub-no-key'
 			};
@@ -545,55 +585,58 @@ describe('settings', () => {
 			settingsLib.initialize(
 				defaultOptions,
 				(err, settings) => {
-					should.not.exist(err);
-					should.exist(settings['no-key']);
-					should.exist(settings['no-key']['sub-no-key']);
-					settings['no-key']['sub-no-key']
-						.should.equal('created from command line switch');
+					expect(err).toBeFalsy();
+					expect(settings['no-key']).toBeDefined();
+					expect(settings['no-key']['sub-no-key']).toBeDefined();
+					expect(settings['no-key']['sub-no-key'])
+						.toBe('created from command line switch');
 
 					process.argv = process.argv.slice(0, process.argv.length - DEFAULT_ARGV_START_POSITION);
 
-					return done();
+					resolve();
 				});
+			});
 		});
 	});
 
 	describe('options.strict', () => {
-		it('should apply only when baseSettingsPath is provided', (done) => {
+		it('should apply only when baseSettingsPath is provided', async () => {
+ await new Promise((resolve) => {
 			defaultOptions.environmentSearchPaths = ['./test'];
 			defaultOptions.strict = false;
 			process.env.NODE_ENV = 'test';
 
 			settingsLib.initialize(defaultOptions, (err, settings) => {
-				should.not.exist(err);
-				should.exist(settings);
-				should.exist(settings['test-key']);
-				should.exist(settings.sub['sub-test-key']);
-				settings.sub['sub-test-key'].should.equal('sub-test-value-override');
-				should.exist(settings['extra-key']);
-				should.exist(settings['extra-key']['sub-extra-key']);
+				expect(err).toBeFalsy();
+				expect(settings).toBeDefined();
+				expect(settings['test-key']).toBeDefined();
+				expect(settings.sub['sub-test-key']).toBeDefined();
+				expect(settings.sub['sub-test-key']).toBe('sub-test-value-override');
+				expect(settings['extra-key']).toBeDefined();
+				expect(settings['extra-key']['sub-extra-key']).toBeDefined();
 
-				return done();
+				resolve();
+			});
 			});
 		});
 
-		it('should ignore additional keys defined in environment override files', (done) => {
+		it('should ignore additional keys defined in environment override files', async () => {
+ await new Promise((resolve) => {
 			defaultOptions.environmentSearchPaths = ['./test'];
 			defaultOptions.strict = true;
 			process.env.NODE_ENV = 'test';
 
 			settingsLib.initialize(defaultOptions, (err, settings) => {
-				should.not.exist(err);
-				should.exist(settings);
-				should.exist(settings['test-key']);
-				should.exist(settings.sub['sub-test-key']);
-				settings.sub['sub-test-key'].should.equal('sub-test-value-override');
-				should.not.exist(settings['extra-key']);
+				expect(err).toBeFalsy();
+				expect(settings).toBeDefined();
+				expect(settings['test-key']).toBeDefined();
+				expect(settings.sub['sub-test-key']).toBeDefined();
+				expect(settings.sub['sub-test-key']).toBe('sub-test-value-override');
+				expect(settings['extra-key']).toBeFalsy();
 
-				return done();
+				resolve();
+			});
 			});
 		});
 	});
 });
-
-export default {};
